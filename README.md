@@ -1,12 +1,8 @@
-# TG1 - 5º semestre de BD
-
-Professor da Disciplina: Giuliano Bertoti 
-
-# TG
+# Trabalho de Graduação
 
 Aluno: Douglas Hiromi Nishiama - RA: 1460281623012
 
-Orientador: A definir 
+Orientador: Diogo Branquinho
 
 Título do TG: GESTOR DE OUTSOURCING DE IMPRESSÃO
 
