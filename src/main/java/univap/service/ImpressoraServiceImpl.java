@@ -80,8 +80,55 @@ public class ImpressoraServiceImpl {
 	}
 	
 	//@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public Impressora atualizar(Impressora impressora){	
-		return impressoraRepo.save(impressora);
+	public Impressora atualiza(Impressora impressora){
+		String ip = impressora.getIp();
+		try {
+			Impressora impressoraExistente = impressoraRepo.findBySerial(Agente.serial(ip));
+			if (impressoraExistente != null) {			
+				Date hoje = new Date();
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				String check = dateFormat.format(hoje);
+				Long mono,color;
+				if (Agente.getContadorMono(ip)>0) {
+					mono = (long) Agente.getContadorMono(ip);
+				}
+				else {
+					mono =(long) -1;
+				}
+				if (Agente.getContadorColor(ip)>0) {
+					color= (long) Agente.getContadorColor(ip);
+				}
+				else {
+					color =(long) -1;
+				}
+				
+				//Parametros Recebidos
+				impressoraExistente.setPatrimonio(impressora.getPatrimonio());
+				impressoraExistente.setIp(ip);
+				impressoraExistente.setDepartamento(impressora.getDepartamento());
+				impressoraExistente.setFabricante(impressora.getFabricante());
+				impressoraExistente.setModelo(impressora.getModelo());
+				impressoraExistente.setSerial(impressora.getSerial());
+				impressoraExistente.setDepartamento(impressora.getDepartamento());
+				
+				//Parametros do agente
+				impressoraExistente.setContadorMono(mono);
+				if (color >= 0) {
+					impressoraExistente.setContadorColor(color);
+				}
+				else{
+					impressoraExistente.setContadorColor(null);
+				}			
+				impressoraExistente.setUltimoUpdate(check);
+				impressoraRepo.save(impressoraExistente);
+				System.out.println("Contador: "+ mono);
+				return impressoraRepo.save(impressoraExistente);
+			}
+		}
+		catch (Exception e) {
+			System.out.println("Deu ruim");
+		}
+		return null;
 	}
 	
 	public List <Impressora> buscaPorDepartamento(Departamento departamento){	

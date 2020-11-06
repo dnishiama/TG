@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import univap.agent.Agente;
 import univap.model.Impressora;
 import univap.repository.ImpressoraRepo;
 import univap.service.ImpressoraServiceImpl;
@@ -57,8 +58,7 @@ public class ImpressoraController {
 		return ResponseEntity.notFound().build();
 	}
 	
-	/**POST DE UM NOVA IMPRESSORA
-	 * @throws IOException */
+	/**POST DE UM NOVA IMPRESSORA*/
 	@PostMapping(value = "/cadastrar")
 	@JsonView(View.ViewResumo.class)
 	public Impressora cadastrarImpressora(@Valid @RequestBody ImpressoraDTO impressora) throws IOException { 
@@ -69,27 +69,17 @@ public class ImpressoraController {
 				);				
 	}
 	
-	/**PUT DE UMA IMPRESSORA: PARAMETRO ID*/
+	/**PUT DE UPDATE DE UMA IMPRESSORA: PARAMETRO ID*/
 	@PutMapping("/atualizar/{impressoraId}")
 	@JsonView(View.ViewResumo.class)
-	public ResponseEntity<Impressora> atualizar(@PathVariable Long impressoraId, @Valid @RequestBody Impressora impressora){
-		Optional <Impressora> optionalImpressora = impressoraRepo.findById(impressoraId);
-		if(!optionalImpressora.isPresent()) {
-			return ResponseEntity.notFound().build();
+	public ResponseEntity<Impressora> atualizar(@PathVariable Long impressoraId) { 		
+		Optional <Impressora> optImpressora = impressoraRepo.findByPatrimonio(impressoraId);
+		if (optImpressora.isPresent()) {
+			Impressora impressora = optImpressora.get();
+			impressoraService.atualiza(impressora);
+			return ResponseEntity.ok(optImpressora.get());
 		}
-		else {
-			Impressora impressoraAtualizado = new Impressora();
-			impressoraAtualizado.setId(impressoraId);
-			impressoraAtualizado.setPatrimonio(impressora.getPatrimonio());
-			impressoraAtualizado.setModelo(impressora.getModelo());
-			impressoraAtualizado.setSerial(impressora.getSerial());
-			impressoraAtualizado.setIp(impressora.getIp());
-			
-			//Get do agente
-			
-			impressora = impressoraRepo.save(impressoraAtualizado);
-		}
-		return ResponseEntity.ok(impressora);
+		return ResponseEntity.notFound().build();
 	}
 	
 	/**DELETE DE UM DEPARTAMENTO: PARAMETRO ID*/

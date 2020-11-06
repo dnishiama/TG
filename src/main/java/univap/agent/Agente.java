@@ -88,6 +88,9 @@ public class Agente {
 			else if  (client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString().contains("EPSON")) {
 				fabricante = "Epson";
 			}
+			else if  (client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString().contains("SHARP")) {
+				fabricante = "Sharp";
+			}
 		}
 		System.out.println("Fabricante: " + fabricante);
 		return fabricante;			
@@ -108,6 +111,9 @@ public class Agente {
 		else if  (selectMIB.contains("EPSON")) {
 			printerModel = client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.1.1.1.2.1"));
 		}
+		else if  (selectMIB.contains("SHARP")) {
+			printerModel = client.getAsString(new OID(".1.3.6.1.2.1.25.3.2.1.3.1")).substring(6);
+		}
 		return printerModel;				
 	}
 	
@@ -124,6 +130,9 @@ public class Agente {
 		}
 		else if  (selectMIB.contains("EPSON")) {
 			printerSerial = client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.2.1.1.2.1.2"));
+		}
+		else if  (selectMIB.contains("SHARP")) {
+			printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
 		}
 		return printerSerial;				
 	}
@@ -148,21 +157,28 @@ public class Agente {
 				printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.641.2.1.5.1.0")));
 			}	
 		}
-		else if (selectMIB.contains("Oki Data Corporation")) {
+		else if (selectMIB.contains("Oki Data Corporation")) {	
 			printerModel = client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.2.3.1.3.1.1"));
-			printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
-			printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.3.21.6.1.2.1.3")));
+			if (printerModel.contentEquals("MC780")) {
+				printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
+				printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.3.21.6.1.2.1.3")));
+			}
 		}
 		else if  (selectMIB.contains("EPSON")) {
 			printerModel = client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.1.1.1.2.1"));
 			printerSerial = client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.2.1.1.2.1.2"));
 
-			if (printerModel.contains("WF-M5799")) {
+			if (printerModel.contains("WF-M5799")||printerModel.contains("WF-M5299")) {
 				printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.27.1.1.3.1.1")));
 			}
 			else if (printerModel.contains("WF-5690")) {
-				printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.27.1.1.4.1.1")));
-			}						
+				printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.27.1.1.3.1.1")));
+			}				
+		}
+		else if (selectMIB.contains("SHARP")) {
+			printerModel = client.getAsString(new OID(".1.3.6.1.2.1.25.3.2.1.3.1")).substring(6);
+			printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
+			printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.2.1.43.10.2.1.4.1.1")));
 		}
 		return printerCounterMono;		
 	}
@@ -186,13 +202,22 @@ public class Agente {
 		}
 		else if  (selectMIB.contains("EPSON"))
 		{
-			printerModel = client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.2.3.1.3.1.1"));
-			printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
+			printerModel = client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.1.1.1.2.1"));
+			printerSerial = client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.2.1.1.2.1.2"));
 			if (printerModel.contains("WF-5690"))
 			{
-				printerCounterColor = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.27.1.1.3.1.1")));
+				printerCounterColor = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.27.1.1.4.1.1")));
 			}
 		}
+		/** Ver impressora do Marketing.
+		 else if (selectMIB.contains("SHARP")) {
+			printerModel = client.getAsString(new OID(".1.3.6.1.2.1.25.3.2.1.3.1")).substring(7);
+			printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
+			if (printerModel.contains("MX2010U"))
+			{
+				printerCounterColor = Long.parseLong(client.getAsString(new OID("")));
+			}
+		}*/
 		return printerCounterColor;		
 	}
 	

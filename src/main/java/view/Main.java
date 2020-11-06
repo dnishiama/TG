@@ -9,7 +9,7 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 
 		String[] ips = {
-				"172.17.88.241", //BLOCO B - COORDENA��O (VILMA)
+				/**"172.17.88.241", //BLOCO B - COORDENA��O (VILMA)
 				"172.17.104.243", //FACULDADE DE DIREITO - SECRETARIA
 				"172.17.40.240", //BLOCO 03 - SECRETARIA (FEA)
 				"172.16.37.243", //CTIC - BACKUP
@@ -18,9 +18,11 @@ public class Main {
 				"172.17.128.248", //ORIENTA��O PEDAG�GICA
 				"172.17.132.99", //CTI - EL�TRICA
 				"172.17.128.242", //CTI - SECRETARIA
-				"172.17.40.241", //Urbanova - Bl.3 Direção 				 
+				"172.17.40.241", //Urbanova - Bl.3 Direção */
+				"172.17.56.240"
+
 				};
-		while (true) {
+		//while (true) {
 			for (int i = 0; i < ips.length; i++) 
 			{
 				if (AgenteSnmp.disponivel(ips[i]))
@@ -29,7 +31,7 @@ public class Main {
 				}
 				System.out.println("-------------------------------------------------------------");
 		    }
-		}
+		//}
 
 	}
 

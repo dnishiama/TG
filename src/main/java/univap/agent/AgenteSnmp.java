@@ -166,7 +166,7 @@ public class AgenteSnmp {
 			String printerSerial = client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.2.1.1.2.1.2"));
 			int printerCounterColor = 0;
 			int printerCounterMono = 0;
-			if (printerModel.contains("WF-M5799"))
+			if (printerModel.contains("WF-M5799")||printerModel.contains("WF-M5299"))
 			{
 				printerCounterMono = Integer.parseInt(client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.27.1.1.3.1.1")));
 			}
@@ -176,7 +176,7 @@ public class AgenteSnmp {
 				printerCounterMono = Integer.parseInt(client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.27.1.1.4.1.1")));
 			}
 			
-			if (printerModel.contains("WF-M5799"))
+			if (printerModel.contains("WF-M5799")||printerModel.contains("WF-M5299"))
 			{
 				System.out.println("Modelo: EPSON " + printerModel);
 				System.out.println("Serial: " + printerSerial);
