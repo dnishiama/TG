@@ -47,14 +47,14 @@ public class DepartamentoController {
 	
 	/**GET TODOS OS DEPARTAMENTOS*/
 	@GetMapping
-	@JsonView(View.ViewResumo.class)
+	@JsonView(View.ViewCompleto.class)
 	public List<Departamento> listar() {
 		return departamentoRepo.findAll();
 	}
 	
 	/**GET DEPARTAMENTO: PARAMETRO ID*/
 	@GetMapping("/{departamentoId}") 
-	@JsonView(View.ViewResumo.class)
+	@JsonView(View.ViewCompleto.class)
 	public ResponseEntity<Departamento> buscar(@PathVariable Long departamentoId) { 		
 		Optional <Departamento> departamento = departamentoRepo.findById(departamentoId);
 		if (departamento.isPresent()) {
@@ -95,7 +95,7 @@ public class DepartamentoController {
 	
 	/**POST DE UM NOVO DEPARTAMENTO*/
 	@PostMapping(value = "/cadastrar")
-	@JsonView(View.ViewResumo.class)
+	@JsonView(View.ViewCompleto.class)
 	public Departamento cadastrarDepartamento(@Valid @RequestBody DepartamentoDTO departamento) { 
 		return departamentoService.novoDepartamento(departamento.getCampus(),
 				departamento.getBloco(),
@@ -106,7 +106,7 @@ public class DepartamentoController {
 
 	/**PUT DE UM DEPARTAMENTO: PARAMETRO ID*/
 	@PutMapping("/atualizar/{departamentoId}")
-	@JsonView(View.ViewResumo.class)
+	@JsonView(View.ViewCompleto.class)
 	public ResponseEntity<Departamento> atualizar(@PathVariable Long departamentoId, @Valid @RequestBody Departamento departamento){
 		Optional <Departamento> optionalDepartamento = departamentoRepo.findById(departamentoId);
 		if(!optionalDepartamento.isPresent()) {
