@@ -1,3 +1,4 @@
+package view;
 import java.io.IOException;
 
 import univap.agent.Agente;

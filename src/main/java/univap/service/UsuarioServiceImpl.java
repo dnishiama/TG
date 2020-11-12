@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import univap.model.Autorizacao;
+import univap.model.Gestor;
 import univap.model.Usuario;
 import univap.repository.AutorizacaoRepo;
 import univap.repository.UsuarioRepo;
@@ -45,6 +46,14 @@ public class UsuarioServiceImpl implements UsuarioService {
 		usuario.getAutorizacoes().add(aut);
 		usuarioRepo.save(usuario);
 		return usuario;
+	}
+	
+	public Usuario atualizar(Usuario usuario){	
+		return usuarioRepo.save(usuario);
+	}
+	
+	public void excluir(Long usuarioId) {
+		usuarioRepo.deleteById(usuarioId);
 	}
 
     @Override

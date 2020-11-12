@@ -7,6 +7,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
+import univap.controller.View;
+
 /**
 	@Entity Anotação de indicação de Entidade
 	@Table Anotação da tabela do Banco de dados
@@ -27,9 +31,11 @@ public class Autorizacao {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "aut_id")
+	@JsonView(View.ViewResumo.class)
 	private Long id;
 	
 	@Column(name = "aut_nome", unique=true, length = 20, nullable = false)
+	@JsonView(View.ViewResumo.class)
 	private String nome;
 
 	//Getters and Setters
