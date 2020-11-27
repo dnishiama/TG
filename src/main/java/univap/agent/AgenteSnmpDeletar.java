@@ -18,13 +18,13 @@ import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
-public class AgenteSnmp {
+public class AgenteSnmpDeletar {
 
 	Snmp snmp = null;
 	String address = null;
 
 	/** Constructor * @param add */
-	public AgenteSnmp(String add) 
+	public AgenteSnmpDeletar(String add) 
 	{
 		address = add;
 	}
@@ -44,7 +44,7 @@ public class AgenteSnmp {
 
 	public static void Coleta(String ips) throws IOException 
 	{
-		AgenteSnmp client = new AgenteSnmp(ips + "/161");
+		AgenteSnmpDeletar client = new AgenteSnmpDeletar(ips + "/161");
 		client.start();
 		
 		String selectMIB = client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString();
@@ -126,7 +126,7 @@ public class AgenteSnmp {
 	
 	public static void GetContador(String ips) throws IOException 
 	{
-		AgenteSnmp client = new AgenteSnmp(ips + "/161");
+		AgenteSnmpDeletar client = new AgenteSnmpDeletar(ips + "/161");
 		client.start();
 		
 		String selectMIB = client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString();

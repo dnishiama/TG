@@ -1,7 +1,7 @@
 package view;
 import java.io.IOException;
 
-import univap.agent.AgenteSnmp;
+import univap.agent.AgenteSnmpDeletar;
 
 
 public class Main {
@@ -25,9 +25,9 @@ public class Main {
 		//while (true) {
 			for (int i = 0; i < ips.length; i++) 
 			{
-				if (AgenteSnmp.disponivel(ips[i]))
+				if (AgenteSnmpDeletar.disponivel(ips[i]))
 				{
-					AgenteSnmp.GetContador(ips[i]);
+					AgenteSnmpDeletar.GetContador(ips[i]);
 				}
 				System.out.println("-------------------------------------------------------------");
 		    }

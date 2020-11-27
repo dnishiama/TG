@@ -70,14 +70,13 @@ public class ImpressoraController {
 	}
 	
 	/**PUT DE UPDATE DE UMA IMPRESSORA: PARAMETRO ID*/
-	@PutMapping("/atualizar/{impressoraId}")
+	@PutMapping("/atualizar/{patrimonio}")
 	@JsonView(View.ViewResumo.class)
-	public ResponseEntity<Impressora> atualizar(@PathVariable Long impressoraId) { 		
-		Optional <Impressora> optImpressora = impressoraRepo.findByPatrimonio(impressoraId);
-		if (optImpressora.isPresent()) {
-			Impressora impressora = optImpressora.get();
-			impressoraService.atualiza(impressora);
-			return ResponseEntity.ok(optImpressora.get());
+	public ResponseEntity<Impressora> atualizar(@PathVariable Long patrimonio) { 		
+		Impressora atualizaImpressora = impressoraRepo.findByPatrimonio(patrimonio);
+		if (atualizaImpressora.getPatrimonio().equals(patrimonio)) {
+			impressoraService.atualiza(atualizaImpressora);
+			return ResponseEntity.ok(atualizaImpressora);
 		}
 		return ResponseEntity.notFound().build();
 	}
