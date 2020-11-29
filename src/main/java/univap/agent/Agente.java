@@ -77,148 +77,175 @@ public class Agente {
 	{
 		Agente client = new Agente(ips + "/161");
 		client.start();		
-		String fabricante = null;
-		if(!client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString().isBlank()) {
-			if (client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString().contains("Lexmark")) {
-				fabricante = "Lexmark";
+		try {
+			String fabricante = null;
+			if(!client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString().isBlank()) {
+				if (client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString().contains("Lexmark")) {
+					fabricante = "Lexmark";
+				}
+				else if (client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString().contains("Oki Data Corporation")) {
+					fabricante = "Oki Data";
+				}
+				else if  (client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString().contains("EPSON")) {
+					fabricante = "Epson";
+				}
+				else if  (client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString().contains("SHARP")) {
+					fabricante = "Sharp";
+				}
 			}
-			else if (client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString().contains("Oki Data Corporation")) {
-				fabricante = "Oki Data";
-			}
-			else if  (client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString().contains("EPSON")) {
-				fabricante = "Epson";
-			}
-			else if  (client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString().contains("SHARP")) {
-				fabricante = "Sharp";
-			}
+			System.out.println("Fabricante: " + fabricante);
+			return fabricante;				
 		}
-		System.out.println("Fabricante: " + fabricante);
-		return fabricante;			
+		catch(IOException e) {
+			System.out.println(e);
+		}
+		return null;
 	}
 	
 	public static String modelo(String ips) throws IOException {
 		Agente client = new Agente(ips + "/161");
 		client.start();		
-		String selectMIB = client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString();
-		String printerModel = null;
-		
-		if (selectMIB.contains("Lexmark")) {		
-			printerModel = client.getAsString(new OID(".1.3.6.1.4.1.641.6.2.3.1.4.1"));
+		try {
+			String selectMIB = client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString();
+			String printerModel = null;
+			
+			if (selectMIB.contains("Lexmark")) {		
+				printerModel = client.getAsString(new OID(".1.3.6.1.4.1.641.6.2.3.1.4.1"));
+			}
+			else if (selectMIB.contains("Oki Data Corporation")) {
+				printerModel = client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.2.3.1.3.1.1"));
+			}
+			else if  (selectMIB.contains("EPSON")) {
+				printerModel = client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.1.1.1.2.1"));
+			}
+			else if  (selectMIB.contains("SHARP")) {
+				printerModel = client.getAsString(new OID(".1.3.6.1.2.1.25.3.2.1.3.1")).substring(6);
+			}
+			return printerModel;
 		}
-		else if (selectMIB.contains("Oki Data Corporation")) {
-			printerModel = client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.2.3.1.3.1.1"));
+		catch(IOException e) {
+			System.out.println(e);
 		}
-		else if  (selectMIB.contains("EPSON")) {
-			printerModel = client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.1.1.1.2.1"));
-		}
-		else if  (selectMIB.contains("SHARP")) {
-			printerModel = client.getAsString(new OID(".1.3.6.1.2.1.25.3.2.1.3.1")).substring(6);
-		}
-		return printerModel;				
+		return null;						
 	}
 	
 	public static String serial(String ips) throws IOException {
 		Agente client = new Agente(ips + "/161");
 		client.start();		
-		String selectMIB = client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString();
-		String printerSerial = null;		
-		if (selectMIB.contains("Lexmark")) {		
-			printerSerial = client.getAsString(new OID("..1.3.6.1.4.1.641.2.1.2.1.6.1"));
+		try {
+			String selectMIB = client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString();
+			String printerSerial = null;		
+			if (selectMIB.contains("Lexmark")) {		
+				printerSerial = client.getAsString(new OID("..1.3.6.1.4.1.641.2.1.2.1.6.1"));
+			}
+			else if (selectMIB.contains("Oki Data Corporation")) {
+				printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
+			}
+			else if  (selectMIB.contains("EPSON")) {
+				printerSerial = client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.2.1.1.2.1.2"));
+			}
+			else if  (selectMIB.contains("SHARP")) {
+				printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
+			}
+			return printerSerial;
 		}
-		else if (selectMIB.contains("Oki Data Corporation")) {
-			printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
+		catch(IOException e) {
+			System.out.println(e);
 		}
-		else if  (selectMIB.contains("EPSON")) {
-			printerSerial = client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.2.1.1.2.1.2"));
-		}
-		else if  (selectMIB.contains("SHARP")) {
-			printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
-		}
-		return printerSerial;				
+		return null;		
 	}
 	
 	public static Long getContadorMono(String ips) throws IOException {
 		Agente client = new Agente(ips + "/161");
 		client.start();
-		
-		String selectMIB = client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString();
-		String printerModel;
-		String printerSerial;
-		Long printerCounterMono = (long) 0;
-		
-		if (selectMIB.contains("Lexmark")) {		
-			printerModel = client.getAsString(new OID(".1.3.6.1.4.1.641.6.2.3.1.4.1"));
-			printerSerial = client.getAsString(new OID("..1.3.6.1.4.1.641.2.1.2.1.6.1"));
+		try {
+			String selectMIB = client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString();
+			String printerModel;
+			String printerSerial;
+			Long printerCounterMono = (long) 0;
 			
-			if (printerModel.contentEquals("Lexmark MX410de")) {
+			if (selectMIB.contains("Lexmark")) {		
+				printerModel = client.getAsString(new OID(".1.3.6.1.4.1.641.6.2.3.1.4.1"));
+				printerSerial = client.getAsString(new OID("..1.3.6.1.4.1.641.2.1.2.1.6.1"));
+				
+				if (printerModel.contentEquals("Lexmark MX410de")) {
+					printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.2.1.43.10.2.1.4.1.1")));
+				}
+				else {
+					printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.641.2.1.5.1.0")));
+				}	
+			}
+			else if (selectMIB.contains("Oki Data Corporation")) {	
+				printerModel = client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.2.3.1.3.1.1"));
+				if (printerModel.contentEquals("MC780")) {
+					printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
+					printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.3.21.6.1.2.1.3")));
+				}
+			}
+			else if  (selectMIB.contains("EPSON")) {
+				printerModel = client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.1.1.1.2.1"));
+				printerSerial = client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.2.1.1.2.1.2"));
+	
+				if (printerModel.contains("WF-M5799")||printerModel.contains("WF-M5299")) {
+					printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.27.1.1.3.1.1")));
+				}
+				else if (printerModel.contains("WF-5690")) {
+					printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.27.1.1.3.1.1")));
+				}				
+			}
+			else if (selectMIB.contains("SHARP")) {
+				printerModel = client.getAsString(new OID(".1.3.6.1.2.1.25.3.2.1.3.1")).substring(6);
+				printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
 				printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.2.1.43.10.2.1.4.1.1")));
 			}
-			else {
-				printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.641.2.1.5.1.0")));
-			}	
+			return printerCounterMono;
 		}
-		else if (selectMIB.contains("Oki Data Corporation")) {	
-			printerModel = client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.2.3.1.3.1.1"));
-			if (printerModel.contentEquals("MC780")) {
-				printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
-				printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.3.21.6.1.2.1.3")));
-			}
+		catch(IOException e) {
+			System.out.println(e);
 		}
-		else if  (selectMIB.contains("EPSON")) {
-			printerModel = client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.1.1.1.2.1"));
-			printerSerial = client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.2.1.1.2.1.2"));
-
-			if (printerModel.contains("WF-M5799")||printerModel.contains("WF-M5299")) {
-				printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.27.1.1.3.1.1")));
-			}
-			else if (printerModel.contains("WF-5690")) {
-				printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.27.1.1.3.1.1")));
-			}				
-		}
-		else if (selectMIB.contains("SHARP")) {
-			printerModel = client.getAsString(new OID(".1.3.6.1.2.1.25.3.2.1.3.1")).substring(6);
-			printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
-			printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.2.1.43.10.2.1.4.1.1")));
-		}
-		return printerCounterMono;		
+		return null;				
 	}
 
 	public static Long getContadorColor(String ips) throws IOException 
 	{
 		Agente client = new Agente(ips + "/161");
 		client.start();
-		
-		String selectMIB = client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString();
-		Long printerCounterColor = (long) -1;
-		String printerModel, printerSerial; 
-		
-		if (selectMIB.contains("Oki Data Corporation"))
-		{
-			printerModel = client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.2.3.1.3.1.1"));
-			printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
-			printerCounterColor = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.3.21.6.1.2.1.1")));
-			Long printerCounterColorMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.3.21.6.1.2.1.2")));
-			printerCounterColor += printerCounterColorMono; 
-		}
-		else if  (selectMIB.contains("EPSON"))
-		{
-			printerModel = client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.1.1.1.2.1"));
-			printerSerial = client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.2.1.1.2.1.2"));
-			if (printerModel.contains("WF-5690"))
+		try {
+			String selectMIB = client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString();
+			Long printerCounterColor = (long) -1;
+			String printerModel, printerSerial; 
+			
+			if (selectMIB.contains("Oki Data Corporation"))
 			{
-				printerCounterColor = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.27.1.1.4.1.1")));
+				printerModel = client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.2.3.1.3.1.1"));
+				printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
+				printerCounterColor = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.3.21.6.1.2.1.1")));
+				Long printerCounterColorMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.3.21.6.1.2.1.2")));
+				printerCounterColor += printerCounterColorMono; 
 			}
-		}
-		/** Ver impressora do Marketing.
-		 else if (selectMIB.contains("SHARP")) {
-			printerModel = client.getAsString(new OID(".1.3.6.1.2.1.25.3.2.1.3.1")).substring(7);
-			printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
-			if (printerModel.contains("MX2010U"))
+			else if  (selectMIB.contains("EPSON"))
 			{
-				printerCounterColor = Long.parseLong(client.getAsString(new OID("")));
+				printerModel = client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.1.1.1.2.1"));
+				printerSerial = client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.2.1.1.2.1.2"));
+				if (printerModel.contains("WF-5690"))
+				{
+					printerCounterColor = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.27.1.1.4.1.1")));
+				}
 			}
-		}*/
-		return printerCounterColor;		
+			/** Ver impressora do Marketing.
+			 else if (selectMIB.contains("SHARP")) {
+				printerModel = client.getAsString(new OID(".1.3.6.1.2.1.25.3.2.1.3.1")).substring(7);
+				printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
+				if (printerModel.contains("MX2010U"))
+				{
+					printerCounterColor = Long.parseLong(client.getAsString(new OID("")));
+				}
+			}*/
+			return printerCounterColor;
+		}
+		catch(IOException e) {
+			System.out.println(e);
+		}
+		return null;				
 	}
-	
 }
