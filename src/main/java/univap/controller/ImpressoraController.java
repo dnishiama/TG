@@ -58,24 +58,38 @@ public class ImpressoraController {
 		return ResponseEntity.notFound().build();
 	}
 	
-	/**POST DE UM NOVA IMPRESSORA*/
+	/**POST DE UM NOVA IMPRESSORA
+	 * @throws Exception */
 	@PostMapping(value = "/cadastrar")
 	@JsonView(View.ViewResumo.class)
-	public Impressora cadastrarImpressora(@Valid @RequestBody ImpressoraDTO impressora) throws IOException { 
+	public Impressora cadastrarImpressora(@Valid @RequestBody ImpressoraDTO impressora) throws Exception { 
 		return impressoraService.novaImpressora(
 				impressora.getPatrimonio(),
 				impressora.getIp(),
 				impressora.getDepartamento()
 				);				
 	}
-	
+		
 	/**PUT DE UPDATE DE UMA IMPRESSORA: PARAMETRO ID*/
-	@PutMapping("/atualizar/{patrimonio}")
+	@PutMapping("/contador/{patrimonio}")
 	@JsonView(View.ViewResumo.class)
 	public ResponseEntity<Impressora> atualizar(@PathVariable Long patrimonio) { 		
 		Impressora atualizaImpressora = impressoraRepo.findByPatrimonio(patrimonio);
 		if (atualizaImpressora.getPatrimonio().equals(patrimonio)) {
 			impressoraService.atualiza(atualizaImpressora);
+			return ResponseEntity.ok(atualizaImpressora);
+		}
+		return ResponseEntity.notFound().build();
+	}
+		
+	/**PUT DE UPDATE DE UMA IMPRESSORA: PARAMETRO ID*/
+	@PutMapping("/atualizar/{patrimonio}")
+	@JsonView(View.ViewResumo.class)
+	public ResponseEntity<Impressora> atualizarcadastro(@Valid @RequestBody ImpressoraDTO impressora) throws Exception {		
+		Impressora atualizaImpressora = impressoraRepo.findByPatrimonio(impressora.getPatrimonio());
+		
+		if (atualizaImpressora.getSerial().equals(impressora.getSerial())) {
+			impressora.setDepartamento(impressora.getDepartamento());
 			return ResponseEntity.ok(atualizaImpressora);
 		}
 		return ResponseEntity.notFound().build();
@@ -91,6 +105,23 @@ public class ImpressoraController {
 			impressoraService.excluir(impressoraId);
 			return ResponseEntity.noContent().build();
 		}
+	}
+	
+	@GetMapping("/agente")
+	@JsonView(View.ViewResumo.class)
+	public void atualizar() { 		
+		List<Impressora> impressoras = impressoraRepo.findAll();
+		for(Impressora impressora : impressoras) {
+			try{
+				impressoraService.atualiza(impressora);
+				System.out.println("Pat. "+impressora.getPatrimonio()+" foi atualizada");
+			}
+			catch(Exception e) {
+				System.out.println(e);
+			}
+		}
+		
+		
 	}
 	
 }

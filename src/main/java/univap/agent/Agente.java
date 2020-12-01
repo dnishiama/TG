@@ -73,7 +73,7 @@ public class Agente {
 	    }
 	}
 	
-	public static String fabricante(String ips) throws IOException 
+	public static String fabricante(String ips) throws Exception 
 	{
 		Agente client = new Agente(ips + "/161");
 		client.start();		
@@ -96,13 +96,13 @@ public class Agente {
 			System.out.println("Fabricante: " + fabricante);
 			return fabricante;				
 		}
-		catch(IOException e) {
+		catch(Exception e) {
 			System.out.println(e);
 		}
 		return null;
 	}
 	
-	public static String modelo(String ips) throws IOException {
+	public static String modelo(String ips) throws Exception {
 		Agente client = new Agente(ips + "/161");
 		client.start();		
 		try {
@@ -113,7 +113,13 @@ public class Agente {
 				printerModel = client.getAsString(new OID(".1.3.6.1.4.1.641.6.2.3.1.4.1"));
 			}
 			else if (selectMIB.contains("Oki Data Corporation")) {
-				printerModel = client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.2.3.1.3.1.1"));
+				printerModel = client.getAsString(new OID(".1.3.6.1.2.1.1.5.0"));
+				if(printerModel.contains("MC780")){
+					printerModel = "MC780";
+				}
+				else if(printerModel.contains("ES8473")) {
+					printerModel = "ES8473";
+				}
 			}
 			else if  (selectMIB.contains("EPSON")) {
 				printerModel = client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.1.1.1.2.1"));
@@ -123,13 +129,13 @@ public class Agente {
 			}
 			return printerModel;
 		}
-		catch(IOException e) {
+		catch(Exception e) {
 			System.out.println(e);
 		}
 		return null;						
 	}
 	
-	public static String serial(String ips) throws IOException {
+	public static String serial(String ips) throws Exception {
 		Agente client = new Agente(ips + "/161");
 		client.start();		
 		try {
@@ -149,13 +155,13 @@ public class Agente {
 			}
 			return printerSerial;
 		}
-		catch(IOException e) {
+		catch(Exception e) {
 			System.out.println(e);
 		}
 		return null;		
 	}
 	
-	public static Long getContadorMono(String ips) throws IOException {
+	public static Long getContadorMono(String ips) throws Exception {
 		Agente client = new Agente(ips + "/161");
 		client.start();
 		try {
@@ -175,9 +181,9 @@ public class Agente {
 					printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.641.2.1.5.1.0")));
 				}	
 			}
-			else if (selectMIB.contains("Oki Data Corporation")) {	
-				printerModel = client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.2.3.1.3.1.1"));
-				if (printerModel.contentEquals("MC780")) {
+			else if (selectMIB.contains("Oki Data")) {	
+				printerModel = client.getAsString(new OID(".1.3.6.1.2.1.1.5.0"));
+				if (printerModel.contains("MC780")) {
 					printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
 					printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.3.21.6.1.2.1.3")));
 				}
@@ -200,7 +206,7 @@ public class Agente {
 			}
 			return printerCounterMono;
 		}
-		catch(IOException e) {
+		catch(Exception e) {
 			System.out.println(e);
 		}
 		return null;				
@@ -215,13 +221,23 @@ public class Agente {
 			Long printerCounterColor = (long) -1;
 			String printerModel, printerSerial; 
 			
-			if (selectMIB.contains("Oki Data Corporation"))
+			if (selectMIB.contains("Oki Data"))
 			{
-				printerModel = client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.2.3.1.3.1.1"));
-				printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
-				printerCounterColor = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.3.21.6.1.2.1.1")));
-				Long printerCounterColorMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.3.21.6.1.2.1.2")));
-				printerCounterColor += printerCounterColorMono; 
+				printerModel = client.getAsString(new OID(".1.3.6.1.2.1.1.5.0"));
+				if (printerModel.contains("MC780")) {					
+					printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
+					printerCounterColor = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.3.21.6.1.2.1.1")));
+					Long printerCounterColorMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.3.21.6.1.2.1.2")));
+					printerCounterColor += printerCounterColorMono; 
+				}
+				else if (printerModel.contains("ES8473")) {
+					printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
+					printerCounterColor = Long.parseLong(client.getAsString(new OID("1.3.6.1.4.1.2001.1.1.4.2.1.1.21.0")));
+					Long printerCounterColorMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.2001.1.1.4.2.1.1.27.0")));
+					printerCounterColor += printerCounterColorMono; 
+					
+				}
+				
 			}
 			else if  (selectMIB.contains("EPSON"))
 			{

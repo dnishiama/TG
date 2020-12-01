@@ -1,6 +1,5 @@
 package univap.service;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -24,7 +23,7 @@ public class ImpressoraServiceImpl {
 	
 	@Transactional /**Garantir a atomicidade*/
 	//@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public Impressora novaImpressora(Long patrimonio, String ip, Departamento departamento) throws IOException {
+	public Impressora novaImpressora(Long patrimonio, String ip, Departamento departamento) throws Exception {
 		Impressora impressoraExistente = impressoraRepo.findBySerial(Agente.serial(ip));
 		if (impressoraExistente != null) {
 			throw new NegocioException("Impressora já cadastrado");
@@ -41,7 +40,7 @@ public class ImpressoraServiceImpl {
 				mono = (long) Agente.getContadorMono(ip);
 			}
 			else {
-				mono =(long) -1;
+				mono =(long) 0;
 			}
 			if (Agente.getContadorColor(ip)>0) {
 				color= (long)Agente.getContadorColor(ip);
@@ -81,27 +80,26 @@ public class ImpressoraServiceImpl {
 	
 	//@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public Impressora atualiza(Impressora impressora){
-		String ip = impressora.getIp();
 		try {
+			String ip = impressora.getIp();
 			Impressora impressoraExistente = impressoraRepo.findBySerial(Agente.serial(ip));
 			if (impressoraExistente != null) {			
 				Date hoje = new Date();
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String check = dateFormat.format(hoje);
 				Long mono,color;
-				if (Agente.getContadorMono(ip)>0) {
+				if ((Agente.getContadorMono(ip) > 0) && (Agente.getContadorMono(ip) >= impressoraExistente.getContadorMono())) {
 					mono = (long) Agente.getContadorMono(ip);
 				}
 				else {
-					mono =(long) -1;
+					mono = (long) Agente.getContadorMono(ip);
 				}
-				if (Agente.getContadorColor(ip)>0) {
+				if ((Agente.getContadorColor(ip)>0) && (impressoraExistente.getContadorColor() <= Agente.getContadorColor(ip))) {
 					color= (long) Agente.getContadorColor(ip);
 				}
 				else {
-					color =(long) -1;
+					color = (long) Agente.getContadorColor(ip);
 				}
-				
 				//Parametros Recebidos
 				impressoraExistente.setPatrimonio(impressora.getPatrimonio());
 				impressoraExistente.setIp(ip);
@@ -110,7 +108,6 @@ public class ImpressoraServiceImpl {
 				impressoraExistente.setModelo(impressora.getModelo());
 				impressoraExistente.setSerial(impressora.getSerial());
 				impressoraExistente.setDepartamento(impressora.getDepartamento());
-				
 				//Parametros do agente
 				impressoraExistente.setContadorMono(mono);
 				if (color >= 0) {
@@ -126,13 +123,17 @@ public class ImpressoraServiceImpl {
 			}
 		}
 		catch (Exception e) {
-			System.out.println("Deu ruim");
+			System.out.println("Impressora Offline: "+ e);
 		}
 		return null;
 	}
 	
 	public List <Impressora> buscaPorDepartamento(Departamento departamento){	
 		return impressoraRepo.findByDepartamento(departamento);
+	}
+	
+	public List<Impressora> listar() {
+		return impressoraRepo.findAll();
 	}
 	
 	//@PreAuthorize("hasRole('ROLE_ADMIN')")
