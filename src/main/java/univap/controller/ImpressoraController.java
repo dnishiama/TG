@@ -10,6 +10,7 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,7 +45,7 @@ public class ImpressoraController {
 	@GetMapping
 	@JsonView(View.ViewResumo.class)
 	public List<Impressora> listar() {
-		return impressoraRepo.findAll();
+		return impressoraRepo.findAll(Sort.by(Sort.Direction.ASC, "departamento"));
 	}
 	
 	/**GET Impressora: PARAMETRO ID*/
@@ -69,18 +70,56 @@ public class ImpressoraController {
 				impressora.getDepartamento()
 				);				
 	}
-		
-	/**PUT DE UPDATE DE UMA IMPRESSORA: PARAMETRO ID*/
-	@PutMapping("/contador/{patrimonio}")
+	
+	/**POST DE UM NOVA IMPRESSORA OFFLINE
+	 * @throws Exception */
+	@PostMapping(value = "/cadastraroffline")
 	@JsonView(View.ViewResumo.class)
-	public ResponseEntity<Impressora> atualizar(@PathVariable Long patrimonio) { 		
-		Impressora atualizaImpressora = impressoraRepo.findByPatrimonio(patrimonio);
-		if (atualizaImpressora.getPatrimonio().equals(patrimonio)) {
+	public Impressora cadastrarImpressoraOffline(@Valid @RequestBody ImpressoraDTO impressora) throws Exception { 
+		return impressoraService.novaImpressoraOffline(
+				impressora.getPatrimonio(),
+				impressora.getIp(),
+				impressora.getFabricante(),
+				impressora.getModelo(),
+				impressora.getSerial(),
+				impressora.getContadorMono(),
+				impressora.getContadorColor(),
+				impressora.getDepartamento()
+				);
+	}
+		
+	/**DELETE DE UM DEPARTAMENTO: PARAMETRO ID*/
+	@DeleteMapping("/deletar/{impressoraId}")
+	public ResponseEntity<Void> remover(@PathVariable Long impressoraId) {
+		if (!impressoraRepo.existsById(impressoraId)) {
+			return ResponseEntity.notFound().build();
+		}
+		else {
+			impressoraService.excluir(impressoraId);
+			return ResponseEntity.noContent().build();
+		}
+	}
+	
+	
+	
+	
+	/**PUT DE UPDATE DE UMA IMPRESSORA: PARAMETRO ID*/
+	@PutMapping("/contador/{serial}")
+	@JsonView(View.ViewResumo.class)
+	public ResponseEntity<Impressora> atualizar(@PathVariable String serial) { 		
+		Impressora atualizaImpressora = impressoraRepo.findBySerial(serial);
+		if (atualizaImpressora.getSerial().equals(serial)) {
 			impressoraService.atualiza(atualizaImpressora);
 			return ResponseEntity.ok(atualizaImpressora);
 		}
 		return ResponseEntity.notFound().build();
 	}
+	
+	
+	
+	
+	
+	
 		
 	/**PUT DE UPDATE DE UMA IMPRESSORA: PARAMETRO ID*/
 	@PutMapping("/atualizar/{patrimonio}")
@@ -95,17 +134,7 @@ public class ImpressoraController {
 		return ResponseEntity.notFound().build();
 	}
 	
-	/**DELETE DE UM DEPARTAMENTO: PARAMETRO ID*/
-	@DeleteMapping("/deletar/{impressoraId}")
-	public ResponseEntity<Void> remover(@PathVariable Long impressoraId) {
-		if (!impressoraRepo.existsById(impressoraId)) {
-			return ResponseEntity.notFound().build();
-		}
-		else {
-			impressoraService.excluir(impressoraId);
-			return ResponseEntity.noContent().build();
-		}
-	}
+	
 	
 	@GetMapping("/agente")
 	@JsonView(View.ViewResumo.class)

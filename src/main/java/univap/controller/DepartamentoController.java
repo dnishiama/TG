@@ -6,6 +6,7 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -49,7 +50,7 @@ public class DepartamentoController {
 	@GetMapping
 	@JsonView(View.ViewCompleto.class)
 	public List<Departamento> listar() {
-		return departamentoRepo.findAll();
+		return departamentoRepo.findAll(Sort.by(Sort.Direction.ASC, "campus", "bloco", "departamento"));
 	}
 	
 	/**GET DEPARTAMENTO: PARAMETRO ID*/

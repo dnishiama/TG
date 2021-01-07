@@ -78,12 +78,49 @@ public class ImpressoraServiceImpl {
 		}
 	}
 	
+	public Impressora novaImpressoraOffline(
+			Long patrimonio, 
+			String ip, 
+			String fabricante, 
+			String modelo, 
+			String serial,
+			Long mono,
+			Long color,
+			Departamento departamento) throws Exception {
+		
+		Impressora impressoraExistente = impressoraRepo.findBySerial(serial);
+		if (impressoraExistente != null) {
+			throw new NegocioException("Impressora já cadastrado");
+		}
+		else {			
+			Date hoje = new Date();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String check = dateFormat.format(hoje); 
+
+			Impressora impressoraNova = new Impressora();
+			
+			//Parametros Recebidos
+			impressoraNova.setPatrimonio(patrimonio);
+			impressoraNova.setIp(ip);
+			impressoraNova.setDepartamento(departamento);
+			impressoraNova.setFabricante(fabricante);
+			impressoraNova.setModelo(modelo);
+			impressoraNova.setSerial(serial);			
+			impressoraNova.setContadorMono(mono);
+			impressoraNova.setContadorColor(color);
+			impressoraNova.setUltimoUpdate(check);
+			
+			impressoraRepo.save(impressoraNova);
+			return impressoraNova;
+		}
+	}
+	
 	//@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public Impressora atualiza(Impressora impressora){
 		try {
 			String ip = impressora.getIp();
 			Impressora impressoraExistente = impressoraRepo.findBySerial(Agente.serial(ip));
-			if (impressoraExistente != null) {			
+			if ((impressoraExistente != null) && (impressoraExistente.getSerial() == impressora.getSerial()) && (impressoraExistente.getModelo() == impressora.getModelo())) {			
 				Date hoje = new Date();
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String check = dateFormat.format(hoje);
@@ -120,6 +157,9 @@ public class ImpressoraServiceImpl {
 				impressoraRepo.save(impressoraExistente);
 				System.out.println("Contador: "+ mono);
 				return impressoraRepo.save(impressoraExistente);
+			}
+			else {
+				System.out.println("Dados Divergentes");
 			}
 		}
 		catch (Exception e) {

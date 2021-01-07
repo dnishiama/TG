@@ -17,14 +17,21 @@ public class Main {
 			
 		for (Impressora impressora : impressoraService.listar()) {
 			String ip = impressora.getIp();
-			if (Agente.disponivel(ip))
-			{
-				Long mono = Agente.getContadorMono(ip);
-				Long color = Agente.getContadorColor(ip);
-				System.out.println("Mono: "+mono);
-				System.out.println("Color: "+color);
+			try{
+				if (Agente.disponivel(ip))
+				{
+					Long mono = Agente.getContadorMono(ip);
+					Long color = Agente.getContadorColor(ip);
+					System.out.println("Mono: "+mono);
+					System.out.println("Color: "+color);
+				}
+				System.out.println("-------------------------------------------------------------");
 			}
-			System.out.println("-------------------------------------------------------------");
+			catch(Exception e) {
+				System.out.println("nã nã");
+				System.out.println("-------------------------------------------------------------");
+			}
+
 		}
 	}
 

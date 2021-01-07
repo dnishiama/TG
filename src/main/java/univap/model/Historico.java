@@ -10,7 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -37,142 +36,131 @@ import univap.controller.View;
 */
 
 @Entity
-@Table(name="imp_impressora")
-public class Impressora {
+@Table(name="his_historico")
+public class Historico {
 	@NotNull(groups = ValidationGroups.GestorId.class)
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "imp_id")
+	@Column(name = "his_id")
 	@JsonView(View.ViewResumo.class)
 	private Long id;
-
-	@Column(name = "imp_patrimonio")
+	
+	@NotNull
+	@Column(name = "his_patrimonio")
 	@JsonView(View.ViewResumo.class)
 	private Long patrimonio;
 	
-	@NotBlank
-	@Size(max = 80)
-	@Column(name = "imp_fabricante")
-	@JsonView(View.ViewResumo.class)
-	private String fabricante;
-	
-	@NotBlank
-	@Size(max = 30)
-	@Column(name = "imp_modelo")
-	@JsonView(View.ViewResumo.class)
-	private String modelo;
-	
-	@NotBlank
-	@Size(max = 40)
-	@Column(name = "imp_serie")
-	@JsonView(View.ViewResumo.class)
-	private String serial;
-	
-	@NotBlank
-	@Size(max = 30)
-	@Column(name = "imp_conexao")
-	@JsonView(View.ViewResumo.class)
-	private String ip;
-	
-	@Column(name = "imp_ultimo_contador")
+	@Column(name = "his_contador")
 	@JsonView(View.ViewResumo.class)
 	private Long contadorMono;
-	
-	@Column(name = "imp_ultimo_contador_color")
+		
+	@Column(name = "his_contador_color")
 	@JsonView(View.ViewResumo.class)
 	private Long contadorColor;
-
-	@Size(max = 30)
-	@Column(name = "imp_ultimo_update")
+	
+	@NotNull
+	@Column(name = "his_mes_referencia")
 	@JsonView(View.ViewResumo.class)
-	private String ultimoUpdate;
-
+	private Long mes;
+	
+	@NotNull
+	@Column(name = "his_ano_referencia")
+	@JsonView(View.ViewResumo.class)
+	private Long ano;
+		
+	@NotNull
+	@Size(max = 30)
+	@Column(name = "his_data_insert")
+	@JsonView(View.ViewResumo.class)
+	private String data;
+	
+	
 	@Valid
 	@ConvertGroup(from = Default.class, to = ValidationGroups.GestorId.class)
 	@NotNull
-	@ManyToOne(fetch = FetchType.EAGER)	
-	@JoinColumn(name = "imp_dep_id")
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "his_imp_id")
 	@JsonView(View.ViewResumo.class)
-	private Departamento departamento;
+	private Impressora impressora;
+
 
 	public Long getId() {
 		return id;
 	}
 
+
 	public void setId(Long id) {
 		this.id = id;
 	}
+
 
 	public Long getPatrimonio() {
 		return patrimonio;
 	}
 
+
 	public void setPatrimonio(Long patrimonio) {
 		this.patrimonio = patrimonio;
 	}
 
-	public String getFabricante() {
-		return fabricante;
-	}
-
-	public void setFabricante(String fabricante) {
-		this.fabricante = fabricante;
-	}
-
-	public String getModelo() {
-		return modelo;
-	}
-
-	public void setModelo(String modelo) {
-		this.modelo = modelo;
-	}
-
-	public String getSerial() {
-		return serial;
-	}
-
-	public void setSerial(String serial) {
-		this.serial = serial;
-	}
-
-	public String getIp() {
-		return ip;
-	}
-
-	public void setIp(String ip) {
-		this.ip = ip;
-	}
 
 	public Long getContadorMono() {
 		return contadorMono;
 	}
 
+
 	public void setContadorMono(Long contadorMono) {
 		this.contadorMono = contadorMono;
 	}
+
 
 	public Long getContadorColor() {
 		return contadorColor;
 	}
 
+
 	public void setContadorColor(Long contadorColor) {
 		this.contadorColor = contadorColor;
 	}
 
-	public String getUltimoUpdate() {
-		return ultimoUpdate;
+
+	public Long getMes() {
+		return mes;
 	}
 
-	public void setUltimoUpdate(String ultimoUpdate) {
-		this.ultimoUpdate = ultimoUpdate;
+
+	public void setMes(Long mes) {
+		this.mes = mes;
 	}
 
-	public Departamento getDepartamento() {
-		return departamento;
+
+	public Long getAno() {
+		return ano;
 	}
 
-	public void setDepartamento(Departamento departamento) {
-		this.departamento = departamento;
+
+	public void setAno(Long ano) {
+		this.ano = ano;
 	}
-	
+
+
+	public String getData() {
+		return data;
+	}
+
+
+	public void setData(String data) {
+		data = data;
+	}
+
+
+	public Impressora getImpressora() {
+		return impressora;
+	}
+
+
+	public void setImpressora(Impressora impressora) {
+		this.impressora = impressora;
+	}
+
 }
