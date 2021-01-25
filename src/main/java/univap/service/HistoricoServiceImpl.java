@@ -38,22 +38,28 @@ public class HistoricoServiceImpl {
 			throw new NegocioException("Impressora inexistente");
 		}
 		else {		
-			Historico historicoNovo = new Historico();
-			
-			historicoNovo.setPatrimonio(patrimonio);
-			historicoNovo.setContadorMono(contadorMono);
-			historicoNovo.setContadorColor(contadorColor);
-			historicoNovo.setMes(mes_referencia);
-			historicoNovo.setAno(ano_referencia);
-						
-			Date hoje = new Date();
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			String check = dateFormat.format(hoje);
-			historicoNovo.setData(check);
-			
-			historicoNovo.setImpressora(impressoraExistente);
-			historicoRepo.save(historicoNovo);
-			return historicoNovo;
+			if (impressoraExistente.getContadorMono()>=contadorMono) {
+				Historico historicoNovo = new Historico();
+
+				historicoNovo.setPatrimonio(patrimonio);
+				historicoNovo.setContadorMono(contadorMono);
+				historicoNovo.setContadorColor(contadorColor);
+				historicoNovo.setMes(mes_referencia);
+				historicoNovo.setAno(ano_referencia);
+								
+				Date hoje = new Date();
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				String check = dateFormat.format(hoje);
+				historicoNovo.setData(check);
+					
+				historicoNovo.setImpressora(impressoraExistente);
+				
+				historicoRepo.save(historicoNovo);
+				return historicoNovo;
+			}
+			else {
+				throw new NegocioException("Contador não bate");
+			}			
 		}
 	}
 	

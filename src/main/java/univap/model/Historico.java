@@ -150,7 +150,7 @@ public class Historico {
 
 
 	public void setData(String data) {
-		data = data;
+		this.data = data;
 	}
 
 

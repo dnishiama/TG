@@ -47,12 +47,12 @@ public class HistoricoController {
 	public List<Historico> listar() {
 		return historicoRepo.findAll();
 	}
-	
+		
 	/**GET HISTORICO: PARAMETRO MES E ANO*/
 	@GetMapping("/{mes}/{ano}") 
 	@JsonView(View.ViewResumo.class)
-	public List <Historico> buscarPorMesEAno(@PathVariable Long mes, Long ano) { 		
-		return historicoRepo.findByMesAndAno(mes, ano);
+	public List<Object[]> buscarPorMesEAno(@PathVariable Long mes, @PathVariable Long ano) { 		
+		return historicoRepo.rateio(mes, ano);
 	}
 	
 	/**POST DE UM NOVO Historico*/

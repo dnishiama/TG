@@ -1,15 +1,12 @@
 package univap.controller;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,11 +18,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
- 
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import univap.agent.Agente;
 import univap.model.Impressora;
 import univap.repository.ImpressoraRepo;
 import univap.service.ImpressoraServiceImpl;
@@ -33,13 +28,16 @@ import univap.service.ImpressoraServiceImpl;
 @RestController
 @RequestMapping("/impressora")
 @CrossOrigin
-/**@CrossOrigin Permite que os serviços dessa classe possam ser acessados por aplicações JavaScript hospedadas em outros servidores*/
-public class ImpressoraController {
-
+public class ImpressoraController implements CommandLineRunner{
+	
+	//------------------------------------------------------ Injeções  ------------------------------------------------------
+	
 	@Autowired
 	private ImpressoraRepo impressoraRepo;
 	@Autowired
 	private ImpressoraServiceImpl impressoraService;
+	
+	//----------------------------------------------------- Metodos GET ------------------------------------------------------
 	
 	/**GET TODAS AS IMPRESSORAS*/
 	@GetMapping
@@ -48,7 +46,7 @@ public class ImpressoraController {
 		return impressoraRepo.findAll(Sort.by(Sort.Direction.ASC, "departamento"));
 	}
 	
-	/**GET Impressora: PARAMETRO ID*/
+	/**GET IMPRESSORA: PARAMETRO ID*/
 	@GetMapping("/{impressoraId}") 
 	@JsonView(View.ViewResumo.class)
 	public ResponseEntity<Impressora> buscar(@PathVariable Long impressoraId) { 		
@@ -59,8 +57,9 @@ public class ImpressoraController {
 		return ResponseEntity.notFound().build();
 	}
 	
-	/**POST DE UM NOVA IMPRESSORA
-	 * @throws Exception */
+	//----------------------------------------------------- Metodos POST ------------------------------------------------------
+	
+	/**POST DE UM NOVA IMPRESSORA ONLINE*/
 	@PostMapping(value = "/cadastrar")
 	@JsonView(View.ViewResumo.class)
 	public Impressora cadastrarImpressora(@Valid @RequestBody ImpressoraDTO impressora) throws Exception { 
@@ -71,8 +70,7 @@ public class ImpressoraController {
 				);				
 	}
 	
-	/**POST DE UM NOVA IMPRESSORA OFFLINE
-	 * @throws Exception */
+	/**POST DE UM NOVA IMPRESSORA OFFLINE*/
 	@PostMapping(value = "/cadastraroffline")
 	@JsonView(View.ViewResumo.class)
 	public Impressora cadastrarImpressoraOffline(@Valid @RequestBody ImpressoraDTO impressora) throws Exception { 
@@ -88,7 +86,9 @@ public class ImpressoraController {
 				);
 	}
 		
-	/**DELETE DE UM DEPARTAMENTO: PARAMETRO ID*/
+	//----------------------------------------------------- Metodos Delete ------------------------------------------------------
+	
+	/**DELETE DE UMA IMPRESSORA: PARAMETRO ID*/
 	@DeleteMapping("/deletar/{impressoraId}")
 	public ResponseEntity<Void> remover(@PathVariable Long impressoraId) {
 		if (!impressoraRepo.existsById(impressoraId)) {
@@ -100,10 +100,9 @@ public class ImpressoraController {
 		}
 	}
 	
-	
-	
-	
-	/**PUT DE UPDATE DE UMA IMPRESSORA: PARAMETRO ID*/
+	//----------------------------------------------------- Metodos PUT ------------------------------------------------------
+		
+	/**PUT DE UPDATE DE CONTADOR DE UMA IMPRESSORA: PARAMETRO SERIAL*/
 	@PutMapping("/contador/{serial}")
 	@JsonView(View.ViewResumo.class)
 	public ResponseEntity<Impressora> atualizar(@PathVariable String serial) { 		
@@ -114,19 +113,12 @@ public class ImpressoraController {
 		}
 		return ResponseEntity.notFound().build();
 	}
-	
-	
-	
-	
-	
-	
-		
+			
 	/**PUT DE UPDATE DE UMA IMPRESSORA: PARAMETRO ID*/
 	@PutMapping("/atualizar/{patrimonio}")
 	@JsonView(View.ViewResumo.class)
 	public ResponseEntity<Impressora> atualizarcadastro(@Valid @RequestBody ImpressoraDTO impressora) throws Exception {		
-		Impressora atualizaImpressora = impressoraRepo.findByPatrimonio(impressora.getPatrimonio());
-		
+		Impressora atualizaImpressora = impressoraRepo.findByPatrimonio(impressora.getPatrimonio());		
 		if (atualizaImpressora.getSerial().equals(impressora.getSerial())) {
 			impressora.setDepartamento(impressora.getDepartamento());
 			return ResponseEntity.ok(atualizaImpressora);
@@ -135,7 +127,7 @@ public class ImpressoraController {
 	}
 	
 	
-	
+	/**PUT DE UPDATE DE CONTADOR DE TODAS AS IMPRESSORA: PARAMETRO SERIAL*/
 	@GetMapping("/agente")
 	@JsonView(View.ViewResumo.class)
 	public void atualizar() { 		
@@ -148,9 +140,13 @@ public class ImpressoraController {
 			catch(Exception e) {
 				System.out.println(e);
 			}
-		}
-		
-		
+		}		
+	}
+
+	@Override
+	public void run(String... args) throws Exception {
+		//implementar um while true
+		atualizar();		
 	}
 	
 }

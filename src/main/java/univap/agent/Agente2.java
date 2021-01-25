@@ -21,39 +21,40 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import exception.NegocioException;
+import univap.model.Oid;
 import univap.repository.OidRepo;
+import univap.service.OidServiceImpl;
 
-@Service
-public class Agente {
-
-	@Autowired
-	private OidRepo oidrepo;
+public class Agente2 {
 	
-	Snmp snmp = null;
-	String address = null;
+	@Autowired
+	private OidRepo oidRepo;
 	
 	//Declaração de OID's padrões 
 	
 	//Fabricante é um OID comum para todas as impressoras.
-	String fabricanteOid = ".1.3.6.1.2.1.1.1.0";
+	static String fabricanteOid = ".1.3.6.1.2.1.1.1.0";
 		
 	//Modelo é um OID comum para todas as impressoras da mesma fabricante.	
-	String lexmarkModel = ".1.3.6.1.4.1.641.6.2.3.1.4.1";
-	String okiModel = ".1.3.6.1.2.1.1.5.0";
-	String epsonModel = ".1.3.6.1.4.1.1248.1.2.2.1.1.1.2.1";
-	String sharpModel = ".1.3.6.1.2.1.25.3.2.1.3.1";
+	static String lexmarkModel = ".1.3.6.1.4.1.641.6.2.3.1.4.1";
+	static String okiModel = ".1.3.6.1.2.1.1.5.0";
+	static String epsonModel = ".1.3.6.1.4.1.1248.1.2.2.1.1.1.2.1";
+	static String sharpModel = ".1.3.6.1.2.1.25.3.2.1.3.1";
 
 	//Serial é um OID comum para todas as impressoras da mesma fabricante.
-	String lexmarkSerial = ".1.3.6.1.4.1.641.2.1.2.1.6.1";
-	String okiSerial = ".1.3.6.1.2.1.43.5.1.1.17.1";
-	String epsonSerial = ".1.3.6.1.4.1.1248.1.2.2.2.1.1.2.1.2";
-	String sharpSerial = ".1.3.6.1.2.1.43.5.1.1.17.1";
-	
-	public Agente(String add) {
+	static String lexmarkSerial = ".1.3.6.1.4.1.641.2.1.2.1.6.1";
+	static String okiSerial = ".1.3.6.1.2.1.43.5.1.1.17.1";
+	static String epsonSerial = ".1.3.6.1.4.1.1248.1.2.2.2.1.1.2.1.2";
+	static String sharpSerial = ".1.3.6.1.2.1.43.5.1.1.17.1";
+
+	Snmp snmp = null;
+	String address = null;
+
+	public Agente2(String add) {
 		address = add;
 	}
 	
-	public Agente() {
+	public Agente2() {
 	}
 
 	private void start() throws IOException {
@@ -102,39 +103,44 @@ public class Agente {
 	    }
 	}
 	
-	public String fabricante(String ips) throws Exception 
+	public String getFabricante(String ips) throws Exception 
 	{
-		Agente client = new Agente(ips + "/161");
-		client.start();		
-		try {
-			String fabricante = null;
-			if(!client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString().isBlank()) {
-				if (client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString().contains("Lexmark")) {
-					fabricante = "Lexmark";
+		if (disponivel(ips)) {
+			try {
+				Agente2 client = new Agente2(ips + "/161");
+				client.start();		
+				String fabricante = null;
+				if(!client.getAsString(new OID(fabricanteOid)).toString().isBlank()) {
+					fabricante = client.getAsString(new OID(fabricanteOid)).toString();
+					if (fabricante.contains("Lexmark")) {
+						fabricante = "Lexmark";
+					}
+					else if (fabricante.contains("Oki Data Corporation")) {
+						fabricante = "Oki Data";
+					}
+					else if  (fabricante.contains("EPSON")) {
+						fabricante = "Epson";
+					}
+					else if  (fabricante.contains("SHARP")) {
+						fabricante = "Sharp";
+					}
 				}
-				else if (client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString().contains("Oki Data Corporation")) {
-					fabricante = "Oki Data";
-				}
-				else if  (client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString().contains("EPSON")) {
-					fabricante = "Epson";
-				}
-				else if  (client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString().contains("SHARP")) {
-					fabricante = "Sharp";
-				}
+				System.out.println("Fabricante: " + fabricante);
+				return fabricante;				
 			}
-			System.out.println("Fabricante: " + fabricante);
-			return fabricante;				
+			catch(Exception e) {
+				throw new Exception (e); 
+			}
 		}
-		catch(Exception e) {
-			System.out.println(e);
+		else {
+			throw new NegocioException("Impressora Offline");
 		}
-		return null;
 	}
 	
 	public String getModelo(String ips) throws Exception {	
 		if (disponivel(ips)) {
 			try {
-				Agente client = new Agente(ips + "/161");
+				Agente2 client = new Agente2(ips + "/161");
 				client.start();	
 				String fabricante = client.getAsString(new OID(fabricanteOid)).toString();
 				String printerModel = null;
@@ -171,7 +177,7 @@ public class Agente {
 	public String serial(String ips) throws Exception {
 		if (disponivel(ips))
 		{
-			Agente client = new Agente(ips + "/161");
+			Agente2 client = new Agente2(ips + "/161");
 			client.start();		
 			try {
 				String fabricante = client.getAsString(new OID(fabricanteOid)).toString();
@@ -200,57 +206,61 @@ public class Agente {
 	}
 	
 	public Long getContadorMono(String ips) throws Exception {
-		
-		//System.out.println(oidrepo.findByDescricao("X656de"));
-		
-		
 		if (disponivel(ips)) {
-			try {			
-				Agente client = new Agente(ips + "/161");
+			try {
+				Agente2 client = new Agente2(ips + "/161");
 				client.start();
 				String fabricante = client.getAsString(new OID(fabricanteOid)).toString();
 				String printerModel;
 				Long printerCounterMono = null;
+				
 				if (fabricante.contains("Lexmark")) {		
 					printerModel = client.getAsString(new OID(lexmarkModel));				
 					if (printerModel.contains("MX410de")) {
-						printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.2.1.43.10.2.1.4.1.1")));
+						Oid oid = oidRepo.findByDescricao("MX410de");
+						printerCounterMono = Long.parseLong(client.getAsString(new OID(oid.getMono())));
 					}
 					else if (printerModel.contains("X656de")) {
-						printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.641.2.1.5.1.0")));
+						Oid oid = oidRepo.findByDescricao("X656de");
+						printerCounterMono = Long.parseLong(client.getAsString(new OID(oid.getMono())));
 					}
 					else if (printerModel.contains("T654dn")) {
-						printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.641.2.1.5.1.0")));
+						Oid oid = oidRepo.findByDescricao("T654dn");
+						printerCounterMono = Long.parseLong(client.getAsString(new OID(oid.getMono())));
 					}	
 				}
+				
+				
 				else if (fabricante.contains("Oki Data")) {	
 					printerModel = client.getAsString(new OID(okiModel));						
 					if (printerModel.contains("MC780")) {						
-						printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.3.21.6.1.2.1.3")));
+						Oid oid = oidRepo.findByDescricao("MC780");												
+						printerCounterMono = Long.parseLong(client.getAsString(new OID(oid.getMono())));
 					}
-				}		
+				}
+				
+				
 				else if (fabricante.contains("EPSON")) {
 					printerModel = client.getAsString(new OID(epsonModel));		
 					if (printerModel.contains("WF-M5799")) {
-						printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.27.1.1.3.1.1")));
+						Oid oid = oidRepo.findByDescricao("Epson WF-M5799");
+						printerCounterMono = Long.parseLong(client.getAsString(new OID(oid.getMono())));
 					}
 					else if (printerModel.contains("WF-M5299")) {
-						printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.27.1.1.3.1.1")));
+						Oid oid = oidRepo.findByDescricao("Epson WF-M5299");
+						printerCounterMono = Long.parseLong(client.getAsString(new OID(oid.getMono())));
 					}
 					else if (printerModel.contains("WF-5690")) {
-						printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.27.1.1.3.1.1")));
-					}
-					else if (printerModel.contains("M3180")) {
-						printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.27.1.1.3.1.1")));
-					}
+						Oid oid = oidRepo.findByDescricao("Epson WF-5690");
+						printerCounterMono = Long.parseLong(client.getAsString(new OID(oid.getMono())));
+					}				
 				}
 				else if (fabricante.contains("SHARP")) {
 					printerModel = client.getAsString(new OID(sharpModel)).substring(6);
-					if(printerModel.contains("MX-M363N")){
-						printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.2.1.43.10.2.1.4.1.1")));
-					}					
-				}			
-				return printerCounterMono;				
+					Oid oid = oidRepo.findByDescricao("MX-M363N");
+					printerCounterMono = Long.parseLong(client.getAsString(new OID(oid.getMono())));
+				}
+				return printerCounterMono;
 			}
 			catch(Exception e) {
 				throw new Exception (e);
@@ -258,40 +268,40 @@ public class Agente {
 		}
 		else {
 			throw new NegocioException("Impressora Offline");
-		}		
+		}
 	}
-
-	public static Long getContadorColor(String ips) throws IOException 
+	
+	public Long GetContadorColor(String ips) throws IOException 
 	{
-		
-		Agente client = new Agente(ips + "/161");
+		Agente2 client = new Agente2(ips + "/161");
 		try {
 			client.start();
 			String selectMIB = client.getAsString(new OID(".1.3.6.1.2.1.1.1.0")).toString();
 			Long printerCounterColor = null;
-			String printerModel; 
+			String printerModel, printerSerial; 
 			
 			if (selectMIB.contains("Oki Data"))
 			{
 				printerModel = client.getAsString(new OID(".1.3.6.1.2.1.1.5.0"));
 				if (printerModel.contains("MC780")) {					
-					
+					printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
 					printerCounterColor = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.3.21.6.1.2.1.1")));
 					Long printerCounterColorMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1129.2.3.50.1.3.21.6.1.2.1.2")));
 					printerCounterColor += printerCounterColorMono; 
 				}
 				else if (printerModel.contains("ES8473")) {
-					
+					printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
 					printerCounterColor = Long.parseLong(client.getAsString(new OID("1.3.6.1.4.1.2001.1.1.4.2.1.1.21.0")));
 					Long printerCounterColorMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.2001.1.1.4.2.1.1.27.0")));
-					printerCounterColor += printerCounterColorMono; 					
+					printerCounterColor += printerCounterColorMono; 
+					
 				}
 				
 			}
 			else if  (selectMIB.contains("EPSON"))
 			{
 				printerModel = client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.1.1.1.2.1"));
-				
+				printerSerial = client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.2.1.1.2.1.2"));
 				if (printerModel.contains("WF-5690"))
 				{
 					printerCounterColor = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.27.1.1.4.1.1")));

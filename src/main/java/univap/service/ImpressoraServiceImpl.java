@@ -18,15 +18,21 @@ import univap.repository.ImpressoraRepo;
 
 @Service
 public class ImpressoraServiceImpl {
+
+	//------------------------------------------------------ Injeções  ------------------------------------------------------
 	@Autowired
 	private ImpressoraRepo impressoraRepo;
+	@Autowired
+	private Agente agente;
 	
+	//-------------------------------------------------- Métodos de Adição ---------------------------------------------------
+
 	@Transactional /**Garantir a atomicidade*/
 	//@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public Impressora novaImpressora(Long patrimonio, String ip, Departamento departamento) throws Exception {
-		Impressora impressoraExistente = impressoraRepo.findBySerial(Agente.serial(ip));
+		Impressora impressoraExistente = impressoraRepo.findBySerial(agente.serial(ip));
 		if (impressoraExistente != null) {
-			throw new NegocioException("Impressora já cadastrado");
+			throw new NegocioException("Impressora já cadastrada");
 		}
 		else {			
 			Date hoje = new Date();
@@ -36,22 +42,22 @@ public class ImpressoraServiceImpl {
 			String fabricante, modelo, serial;
 			fabricante = modelo = serial = "";
 			
-			if (Agente.getContadorMono(ip)>0) {
-				mono = (long) Agente.getContadorMono(ip);
+			if (agente.getContadorMono(ip)>0) {
+				mono = (long) agente.getContadorMono(ip);
 			}
 			else {
 				mono =(long) 0;
 			}
-			if (Agente.getContadorColor(ip)>0) {
-				color= (long)Agente.getContadorColor(ip);
+			if (agente.getContadorColor(ip)>0) {
+				color= (long)agente.getContadorColor(ip);
 			}
 			else {
 				color =(long) -1;
 			}
-			if(!Agente.fabricante(ip).isBlank()) {
-				fabricante = Agente.fabricante(ip);
-				modelo = Agente.modelo(ip);
-				serial = Agente.serial(ip);
+			if(!agente.fabricante(ip).isBlank()) {
+				fabricante = agente.fabricante(ip);
+				modelo = agente.getModelo(ip);
+				serial = agente.serial(ip);
 			}
 			Impressora impressoraNova = new Impressora();
 			
@@ -115,27 +121,29 @@ public class ImpressoraServiceImpl {
 		}
 	}
 	
+	//----------------------------------------------- Métodos de Atualização -------------------------------------------------
+	
 	//@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public Impressora atualiza(Impressora impressora){
 		try {
 			String ip = impressora.getIp();
-			Impressora impressoraExistente = impressoraRepo.findBySerial(Agente.serial(ip));
+			Impressora impressoraExistente = impressoraRepo.findBySerial(agente.serial(ip));
 			if ((impressoraExistente != null) && (impressoraExistente.getSerial() == impressora.getSerial()) && (impressoraExistente.getModelo() == impressora.getModelo())) {			
 				Date hoje = new Date();
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String check = dateFormat.format(hoje);
 				Long mono,color;
-				if ((Agente.getContadorMono(ip) > 0) && (Agente.getContadorMono(ip) >= impressoraExistente.getContadorMono())) {
-					mono = (long) Agente.getContadorMono(ip);
+				if ((agente.getContadorMono(ip) > 0) && (agente.getContadorMono(ip) >= impressoraExistente.getContadorMono())) {
+					mono = (long) agente.getContadorMono(ip);
 				}
 				else {
-					mono = (long) Agente.getContadorMono(ip);
+					mono = (long) agente.getContadorMono(ip);
 				}
-				if ((Agente.getContadorColor(ip)>0) && (impressoraExistente.getContadorColor() <= Agente.getContadorColor(ip))) {
-					color= (long) Agente.getContadorColor(ip);
+				if ((agente.getContadorColor(ip)>0) && (impressoraExistente.getContadorColor() <= agente.getContadorColor(ip))) {
+					color= (long) agente.getContadorColor(ip);
 				}
 				else {
-					color = (long) Agente.getContadorColor(ip);
+					color = (long) agente.getContadorColor(ip);
 				}
 				//Parametros Recebidos
 				impressoraExistente.setPatrimonio(impressora.getPatrimonio());
@@ -168,6 +176,8 @@ public class ImpressoraServiceImpl {
 		return null;
 	}
 	
+	//------------------------------------------------ Métodos de Listagem ---------------------------------------------------
+	
 	public List <Impressora> buscaPorDepartamento(Departamento departamento){	
 		return impressoraRepo.findByDepartamento(departamento);
 	}
@@ -175,6 +185,8 @@ public class ImpressoraServiceImpl {
 	public List<Impressora> listar() {
 		return impressoraRepo.findAll();
 	}
+	
+	//------------------------------------------------ Métodos de Exclusão ---------------------------------------------------
 	
 	//@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void excluir(Long impressoraId) {

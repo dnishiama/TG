@@ -1,25 +1,32 @@
 package view;
-import java.io.IOException;
 
 import univap.agent.Agente;
 
 public class Main2 {
-
+	
 	public static void main(String[] args) throws Exception {
-
+		
+		Agente agente = new Agente();
+		
+		
 		String[] ips = {
-			"200.136.181.90", 							 
+			"172.17.128.242",
+			"172.16.31.240"
 				};
-			for (int i = 0; i < ips.length; i++) 
+		
+		for (int i = 0; i < ips.length; i++) 
+		{
+			if (agente.disponivel(ips[i]))
 			{
-				if (Agente.disponivel(ips[i]))
-				{
-					System.out.println(ips[i]);
-					System.out.println(Agente.getContadorMono(ips[i]));
-					System.out.println(Agente.getContadorColor(ips[i]));
-				}
-				System.out.println("-------------------------------------------------------------");
-		    }
+				System.out.println(ips[i]);
+				System.out.println(agente.getModelo(ips[i]));	
+				System.out.println(agente.getContadorMono(ips[i]));
+				System.out.println(agente.getContadorColor(ips[i]));
+				
+				
+			}
+			System.out.println("-------------------------------------------------------------");
+	    }
 
 
 	}
