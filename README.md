@@ -4,7 +4,7 @@ Aluno: Douglas Hiromi Nishiama - RA: 1460281623012
 
 Orientador: Eduardo Sakaue
 
-Título do TG: GESTOR DE OUTSOURCING DE IMPRESSÃO
+Título: Gestor de Outsourcing de Impressão
 
 ## Descrição
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Trabalho desenvolvido para monitorar, armazenar e gerar rateios automáticos para o serviço de Outsourcing de impressão.
