@@ -16,33 +16,33 @@ Título do TG: GESTOR DE OUTSOURCING DE IMPRESSÃO
 ## Rotas
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Abaixo seguem as rotas desenvolvidas para serem consumidas<br>
 
-###Impressora:
-Get de todas as impressoras: http://localhost:8082/printerManager/impressora/
-Get de impressora por Id: http://localhost:8082/printerManager/impressora/:id
-Post de uma nova impressora de rede: http://localhost:8082/printerManager/impressora/cadastrar
-Post de uma nova impressora USB: http://localhost:8082/printerManager/impressora/cadastraroffline
-Delete de impressora por Id: http://localhost:8082/printerManager/impressora/deletar/:id
-Put de uma atualização de impressora por Patrimonio: http://localhost:8082/printerManager/impressora/atualizar/:patrimonio
-Put de uma atualização dos contadores de todas as impressora: http://localhost:8082/printerManager/impressora/agente
-Put de uma atualização dos contadores de impressora por Serial: http://localhost:8082/printerManager/impressora/contador/:serial
+### Impressora:
+Get de todas as impressoras: http://localhost:8082/printerManager/impressora/<br>
+Get de impressora por Id: http://localhost:8082/printerManager/impressora/:id<br>
+Post de uma nova impressora de rede: http://localhost:8082/printerManager/impressora/cadastrar<br>
+Post de uma nova impressora USB: http://localhost:8082/printerManager/impressora/cadastraroffline<br>
+Delete de impressora por Id: http://localhost:8082/printerManager/impressora/deletar/:id<br>
+Put de uma atualização de impressora por Patrimonio: http://localhost:8082/printerManager/impressora/atualizar/:patrimonio<br>
+Put de uma atualização dos contadores de todas as impressora: http://localhost:8082/printerManager/impressora/agente<br>
+Put de uma atualização dos contadores de impressora por Serial: http://localhost:8082/printerManager/impressora/contador/:serial<br>
 
-###Departamento:
-Get de todos os departamentos: http://localhost:8082/printerManager/departamento/
-Get de departamento por Id: http://localhost:8082/printerManager/departamento/:Id
-Get de departamento por Gestor (Gestor Id): http://localhost:8082/printerManager/departamento/gestor/:Id
-Post de um novo departamento: http://localhost:8082/printerManager/departamento/cadastrar
-Put de atualização de um departamento por Id: http://localhost:8082/printerManager/departamento/atualizar/:Id
-Delete de um departamento por Id: http://localhost:8082/printerManager/departamento/deletar/:Id
+### Departamento:
+Get de todos os departamentos: http://localhost:8082/printerManager/departamento/<br>
+Get de departamento por Id: http://localhost:8082/printerManager/departamento/:Id<br>
+Get de departamento por Gestor (Gestor Id): http://localhost:8082/printerManager/departamento/gestor/:Id<br>
+Post de um novo departamento: http://localhost:8082/printerManager/departamento/cadastrar<br>
+Put de atualização de um departamento por Id: http://localhost:8082/printerManager/departamento/atualizar/:Id<br>
+Delete de um departamento por Id: http://localhost:8082/printerManager/departamento/deletar/:Id<br>
 
-###Gestor:
-Get de todos os gestores: http://localhost:8082/printerManager/gestor/
-Get de gestor por Id: http://localhost:8082/printerManager/gestor/:Id
-Get de gestor por Email: http://localhost:8082/printerManager/gestor/gestor/email/:Email
-Post de um novo gestor: http://localhost:8082/printerManager/gestor/cadastrar
-Put de atualização de um gestor por Id: http://localhost:8082/printerManager/gestor/atualizar/:Id
-Delete de um gestor por Id: http://localhost:8082/printerManager/gestor/deletar/:Id
+### Gestor:
+Get de todos os gestores: http://localhost:8082/printerManager/gestor/<br>
+Get de gestor por Id: http://localhost:8082/printerManager/gestor/:Id<br>
+Get de gestor por Email: http://localhost:8082/printerManager/gestor/gestor/email/:Email<br>
+Post de um novo gestor: http://localhost:8082/printerManager/gestor/cadastrar<br>
+Put de atualização de um gestor por Id: http://localhost:8082/printerManager/gestor/atualizar/:Id<br>
+Delete de um gestor por Id: http://localhost:8082/printerManager/gestor/deletar/:Id<br>
 
-###Histórico:
-Get de todos os historicos: http://localhost:8082/printerManager/historico/
-Get de todos os historicos por Mês e Ano: http://localhost:8082/printerManager/historico/:Mes/:Ano
-Post de um novo historico: http://localhost:8082/printerManager/historico/cadastrar
+### Histórico:
+Get de todos os historicos: http://localhost:8082/printerManager/historico/<br>
+Get de todos os historicos por Mês e Ano: http://localhost:8082/printerManager/historico/:Mes/:Ano<br>
+Post de um novo historico: http://localhost:8082/printerManager/historico/cadastrar<br>
