@@ -28,7 +28,7 @@ import univap.service.ImpressoraServiceImpl;
 @RestController
 @RequestMapping("/impressora")
 @CrossOrigin
-public class ImpressoraController implements CommandLineRunner{
+public class ImpressoraController{// implements CommandLineRunner{
 	
 	//------------------------------------------------------ Injeções  ------------------------------------------------------
 	
@@ -135,7 +135,7 @@ public class ImpressoraController implements CommandLineRunner{
 		for(Impressora impressora : impressoras) {
 			try{
 				impressoraService.atualiza(impressora);
-				System.out.println("Pat. "+impressora.getPatrimonio()+" foi atualizada");
+				System.out.println("Pat. "+impressora.getPatrimonio()+" foi atualizada com sucesso!");
 			}
 			catch(Exception e) {
 				System.out.println(e);
@@ -143,10 +143,12 @@ public class ImpressoraController implements CommandLineRunner{
 		}		
 	}
 
-	@Override
+	/**@Override
 	public void run(String... args) throws Exception {
-		//implementar um while true
-		atualizar();		
+		while (true){
+			atualizar();
+		}
+				
 	}
-	
+	**/
 }

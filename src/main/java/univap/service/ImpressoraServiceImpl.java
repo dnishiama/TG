@@ -30,58 +30,71 @@ public class ImpressoraServiceImpl {
 	@Transactional /**Garantir a atomicidade*/
 	//@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public Impressora novaImpressora(Long patrimonio, String ip, Departamento departamento) throws Exception {
-		Impressora impressoraExistente = impressoraRepo.findBySerial(agente.serial(ip));
-		if (impressoraExistente != null) {
-			throw new NegocioException("Impressora já cadastrada");
+		try {
+			Impressora impressoraExistente = impressoraRepo.findBySerial(agente.serial(ip));
+			if (impressoraExistente != null) {
+				throw new NegocioException("Impressora já cadastrada");
+			}
+			else {			
+				Date hoje = new Date();
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				String check = dateFormat.format(hoje);
+				Long mono,color; 
+				String fabricante, modelo, serial;
+				fabricante = modelo = serial = "";
+				
+				System.out.println("Contador do IP " + ip + " ...");
+				System.out.println("Contador mono: "+ agente.getContadorMono(ip));
+				if (agente.getContadorMono(ip)>0) {
+					mono = (long) agente.getContadorMono(ip);
+				}
+				else {
+					mono =(long) 0;
+				}
+				System.out.println("Mono: "+ mono);
+				
+				color = null;
+				if(agente.getModelo(ip).equals("MC780") || 
+						agente.getModelo(ip).equals("ES8473") || 
+						agente.getModelo(ip).equals("WF-5690"))
+				{
+					if (agente.getContadorColor(ip)>0) {
+						color= (long)agente.getContadorColor(ip);
+						System.out.println("Color: "+ color);
+					}
+				}
+				
+				if(!agente.fabricante(ip).isBlank()) {
+					fabricante = agente.fabricante(ip);
+					modelo = agente.getModelo(ip);
+					serial = agente.serial(ip);
+				}
+				
+				Impressora impressoraNova = new Impressora();
+				
+				//Parametros Recebidos
+				impressoraNova.setPatrimonio(patrimonio);
+				impressoraNova.setIp(ip);
+				impressoraNova.setDepartamento(departamento);
+				
+				//Parametros do agente
+				impressoraNova.setFabricante(fabricante);
+				impressoraNova.setModelo(modelo);
+				impressoraNova.setSerial(serial);			
+				impressoraNova.setContadorMono(mono);
+				impressoraNova.setContadorColor(color);			
+				impressoraNova.setUltimoUpdate(check);
+				impressoraRepo.save(impressoraNova);
+				
+				System.out.println("Contador mono: "+ mono);
+				System.out.println("Contador color: "+ color);
+				return impressoraNova;
+			}
 		}
-		else {			
-			Date hoje = new Date();
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			String check = dateFormat.format(hoje);
-			Long mono,color; 
-			String fabricante, modelo, serial;
-			fabricante = modelo = serial = "";
-			
-			if (agente.getContadorMono(ip)>0) {
-				mono = (long) agente.getContadorMono(ip);
-			}
-			else {
-				mono =(long) 0;
-			}
-			if (agente.getContadorColor(ip)>0) {
-				color= (long)agente.getContadorColor(ip);
-			}
-			else {
-				color =(long) -1;
-			}
-			if(!agente.fabricante(ip).isBlank()) {
-				fabricante = agente.fabricante(ip);
-				modelo = agente.getModelo(ip);
-				serial = agente.serial(ip);
-			}
-			Impressora impressoraNova = new Impressora();
-			
-			//Parametros Recebidos
-			impressoraNova.setPatrimonio(patrimonio);
-			impressoraNova.setIp(ip);
-			impressoraNova.setDepartamento(departamento);
-			
-			//Parametros do agente
-			impressoraNova.setFabricante(fabricante);
-			impressoraNova.setModelo(modelo);
-			impressoraNova.setSerial(serial);			
-			impressoraNova.setContadorMono(mono);
-			if (color >= 0) {
-				impressoraNova.setContadorColor(color);
-			}
-			else{
-				impressoraNova.setContadorColor(null);
-			}			
-			impressoraNova.setUltimoUpdate(check);
-			impressoraRepo.save(impressoraNova);
-			System.out.println("Contador: "+ mono);
-			return impressoraNova;
+		catch (Exception e) {
+			System.out.println(e);
 		}
+		return null;
 	}
 	
 	public Impressora novaImpressoraOffline(
@@ -127,24 +140,39 @@ public class ImpressoraServiceImpl {
 	public Impressora atualiza(Impressora impressora){
 		try {
 			String ip = impressora.getIp();
-			Impressora impressoraExistente = impressoraRepo.findBySerial(agente.serial(ip));
-			if ((impressoraExistente != null) && (impressoraExistente.getSerial() == impressora.getSerial()) && (impressoraExistente.getModelo() == impressora.getModelo())) {			
+			if(ip.equals("USB")) {
+				throw new NegocioException("Impressora USB");
+			}
+			Impressora impressoraExistente = impressoraRepo.findBySerial(agente.serial(ip));		
+			if (	(impressoraExistente != null) && 
+					(impressoraExistente.getSerial() == impressora.getSerial()) && 
+					(impressoraExistente.getModelo() == impressora.getModelo())) {
+				
 				Date hoje = new Date();
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String check = dateFormat.format(hoje);
 				Long mono,color;
+				
+				//Contador mono
 				if ((agente.getContadorMono(ip) > 0) && (agente.getContadorMono(ip) >= impressoraExistente.getContadorMono())) {
 					mono = (long) agente.getContadorMono(ip);
 				}
 				else {
 					mono = (long) agente.getContadorMono(ip);
 				}
-				if ((agente.getContadorColor(ip)>0) && (impressoraExistente.getContadorColor() <= agente.getContadorColor(ip))) {
-					color= (long) agente.getContadorColor(ip);
-				}
-				else {
-					color = (long) agente.getContadorColor(ip);
-				}
+				
+				//Contador color
+				color = null;
+				if(agente.getModelo(ip).equals("MC780") || 
+						agente.getModelo(ip).equals("ES8473") || 
+						agente.getModelo(ip).equals("WF-5690"))
+				{
+					if ((agente.getContadorColor(ip) >= 0) && 
+							(impressoraExistente.getContadorColor() <= agente.getContadorColor(ip)) ) {
+						color= (long) agente.getContadorColor(ip);
+					}
+				}				
+				
 				//Parametros Recebidos
 				impressoraExistente.setPatrimonio(impressora.getPatrimonio());
 				impressoraExistente.setIp(ip);
@@ -153,25 +181,22 @@ public class ImpressoraServiceImpl {
 				impressoraExistente.setModelo(impressora.getModelo());
 				impressoraExistente.setSerial(impressora.getSerial());
 				impressoraExistente.setDepartamento(impressora.getDepartamento());
+				
 				//Parametros do agente
 				impressoraExistente.setContadorMono(mono);
-				if (color >= 0) {
-					impressoraExistente.setContadorColor(color);
-				}
-				else{
-					impressoraExistente.setContadorColor(null);
-				}			
+				impressoraExistente.setContadorColor(color);			
+		
 				impressoraExistente.setUltimoUpdate(check);
 				impressoraRepo.save(impressoraExistente);
-				System.out.println("Contador: "+ mono);
-				return impressoraRepo.save(impressoraExistente);
+				
+				return impressoraExistente;
 			}
 			else {
-				System.out.println("Dados Divergentes");
+				throw new NegocioException("Dados divergentes");
 			}
 		}
 		catch (Exception e) {
-			System.out.println("Impressora Offline: "+ e);
+			System.out.println(e);
 		}
 		return null;
 	}

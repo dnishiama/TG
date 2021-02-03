@@ -97,7 +97,6 @@ public class Agente {
 	    	return true;
 	    }
 	    else {
-	    	System.out.println("Impressora offline!");
 	    	return false;
 	    }
 	}
@@ -200,10 +199,6 @@ public class Agente {
 	}
 	
 	public Long getContadorMono(String ips) throws Exception {
-		
-		//System.out.println(oidrepo.findByDescricao("X656de"));
-		
-		
 		if (disponivel(ips)) {
 			try {			
 				Agente client = new Agente(ips + "/161");
@@ -213,13 +208,13 @@ public class Agente {
 				Long printerCounterMono = null;
 				if (fabricante.contains("Lexmark")) {		
 					printerModel = client.getAsString(new OID(lexmarkModel));				
-					if (printerModel.contains("MX410de")) {
+					if (printerModel.contains("MX410")) {
 						printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.2.1.43.10.2.1.4.1.1")));
 					}
-					else if (printerModel.contains("X656de")) {
+					else if (printerModel.contains("X656")) {
 						printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.641.2.1.5.1.0")));
 					}
-					else if (printerModel.contains("T654dn")) {
+					else if (printerModel.contains("T654")) {
 						printerCounterMono = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.641.2.1.5.1.0")));
 					}	
 				}
