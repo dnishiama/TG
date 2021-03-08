@@ -143,11 +143,13 @@ public class ImpressoraServiceImpl {
 			if(ip.equals("USB")) {
 				throw new NegocioException("Impressora USB");
 			}
-			Impressora impressoraExistente = impressoraRepo.findBySerial(agente.serial(ip));		
+			System.out.println(agente.serial(ip));
+			Impressora impressoraExistente = impressoraRepo.findBySerial(agente.serial(ip));
+			System.out.println(impressoraExistente.getFabricante() + " " + impressoraExistente.getModelo());
+			System.out.println(impressora.getFabricante() + " " + impressora.getModelo());
 			if (	(impressoraExistente != null) && 
-					(impressoraExistente.getSerial() == impressora.getSerial()) && 
-					(impressoraExistente.getModelo() == impressora.getModelo())) {
-				
+					(impressoraExistente.getSerial().equals(impressora.getSerial()) ) && 
+					(impressoraExistente.getModelo().equals(impressora.getModelo())) ) {				
 				Date hoje = new Date();
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String check = dateFormat.format(hoje);
@@ -188,6 +190,9 @@ public class ImpressoraServiceImpl {
 		
 				impressoraExistente.setUltimoUpdate(check);
 				impressoraRepo.save(impressoraExistente);
+				
+				System.out.println("----------------------------------------------------");
+				System.out.println("");
 				
 				return impressoraExistente;
 			}

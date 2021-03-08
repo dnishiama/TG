@@ -6,6 +6,7 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,7 +42,7 @@ public class GestorController {
 	@GetMapping
 	@JsonView(View.ViewCompleto.class)
 	public List<Gestor> listar() {
-		return gestorRepo.findAll();
+		return gestorRepo.findAll(Sort.by(Sort.Direction.ASC, "nome"));
 	}
 	
 	/**GET GESTOR: PARAMETRO ID*/
