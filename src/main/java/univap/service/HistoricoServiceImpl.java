@@ -27,7 +27,7 @@ public class HistoricoServiceImpl {
 	
 	@Transactional /**Garantir a atomicidade*/
 	//@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public Historico novoHistorico(Long patrimonio, Long contadorMono, Long contadorColor, Long mes_referencia, Long ano_referencia) throws Exception {
+	public Historico novoHistorico(Long patrimonio, Long contadorMono, Long contadorColor, Long producaoMono, Long producaoColor, Long mes_referencia, Long ano_referencia) throws Exception {
 		
 		Historico historicoExistente = historicoRepo.findByPatrimonioAndMesAndAno(patrimonio, mes_referencia, ano_referencia);
 		Impressora impressoraExistente = impressoraRepo.findByPatrimonio(patrimonio);
@@ -44,6 +44,8 @@ public class HistoricoServiceImpl {
 				historicoNovo.setPatrimonio(patrimonio);
 				historicoNovo.setContadorMono(contadorMono);
 				historicoNovo.setContadorColor(contadorColor);
+				historicoNovo.setProducaoMono(producaoMono);
+				historicoNovo.setProducaoColor(producaoColor);
 				historicoNovo.setMes(mes_referencia);
 				historicoNovo.setAno(ano_referencia);
 								

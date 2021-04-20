@@ -53,10 +53,18 @@ public class Historico {
 	@Column(name = "his_contador")
 	@JsonView(View.ViewResumo.class)
 	private Long contadorMono;
+	
+	@Column(name = "his_producao")
+	@JsonView(View.ViewResumo.class)
+	private Long producaoMono;
 		
 	@Column(name = "his_contador_color")
 	@JsonView(View.ViewResumo.class)
 	private Long contadorColor;
+	
+	@Column(name = "his_producao_color")
+	@JsonView(View.ViewResumo.class)
+	private Long producaoColor;
 	
 	@NotNull
 	@Column(name = "his_mes_referencia")
@@ -152,6 +160,25 @@ public class Historico {
 	public void setData(String data) {
 		this.data = data;
 	}
+	
+	public Long getProducaoMono() {
+		return producaoMono;
+	}
+
+
+	public void setProducaoMono(Long producaoMono) {
+		this.producaoMono = producaoMono;
+	}
+
+
+	public Long getProducaoColor() {
+		return producaoColor;
+	}
+
+
+	public void setProducaoColor(Long producaoColor) {
+		this.producaoColor = producaoColor;
+	}
 
 
 	public Impressora getImpressora() {
@@ -162,5 +189,7 @@ public class Historico {
 	public void setImpressora(Impressora impressora) {
 		this.impressora = impressora;
 	}
+	
+	
 
 }

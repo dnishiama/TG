@@ -64,6 +64,8 @@ public class HistoricoController {
 				historico.getPatrimonio(),
 				historico.getContadorMono(),
 				historico.getContadorColor(),
+				historico.getProducaoMono(),
+				historico.getProducaoColor(),
 				historico.getMesReferencia(),
 				historico.getAnoReferencia()
 				);				

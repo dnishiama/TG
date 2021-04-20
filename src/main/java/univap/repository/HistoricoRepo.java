@@ -13,7 +13,7 @@ public interface HistoricoRepo extends JpaRepository<Historico, Long>{
 	
 	List<Historico> findByMesAndAno(Long mes, Long ano);
 	
-	@Query("select h.impressora.departamento.ccusto as ccusto, sum(h.contadorMono) as contadorMono, sum(h.contadorColor) as contadorColor "
+	@Query("select h.impressora.departamento.ccusto as ccusto, sum(h.producaoMono) as producaoMono, sum(h.producaoColor) as producaoColor "
 			+ "from Historico as h "
 			+ "where h.mes = :mes and h.ano = :ano "
 			+ "group by ccusto")

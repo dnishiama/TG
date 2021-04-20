@@ -1,5 +1,8 @@
 package univap.controller;
 
+
+import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -145,10 +148,22 @@ public class ImpressoraController implements CommandLineRunner{
 
 	@Override
 	public void run(String... args) throws Exception {
+		LocalDateTime date = LocalDateTime.now();
+		int hora;
+		int minuto;
 		while (true){
-			atualizar();
-		}
+			date = LocalDateTime.now();
+			hora = date.getHour();
+			minuto = date.getMinute();
+			if ((hora == 7)&&(minuto == 30)||(hora == 12)&&(minuto == 00)) {
+				System.out.println("Atualizando");
+				atualizar();
+				Thread.sleep(1000*60);//sleep de 1 minuto.
 				
+			}
+		}
+
+			
 	}
 	
 }
