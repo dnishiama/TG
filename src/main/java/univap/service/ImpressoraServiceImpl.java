@@ -118,6 +118,13 @@ public class ImpressoraServiceImpl {
 
 			Impressora impressoraNova = new Impressora();
 			
+			
+			//TESTAR ISSO:
+			if ((mono<0)||(color<0))
+			{
+				throw new NegocioException("Contadores incompativeis.");
+			}
+			
 			//Parametros Recebidos
 			impressoraNova.setPatrimonio(patrimonio);
 			impressoraNova.setIp(ip);

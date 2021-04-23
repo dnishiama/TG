@@ -58,17 +58,19 @@ public class HistoricoController {
 	/**POST DE UM NOVO Historico*/
 	@PostMapping(value = "/cadastrar")
 	@JsonView(View.ViewResumo.class)
-	public Historico cadastrarHistorico(@Valid @RequestBody HistoricoDTO historico) throws Exception { 
-		
-		return historicoService.novoHistorico(
-				historico.getPatrimonio(),
-				historico.getContadorMono(),
-				historico.getContadorColor(),
-				historico.getProducaoMono(),
-				historico.getProducaoColor(),
-				historico.getMesReferencia(),
-				historico.getAnoReferencia()
-				);				
+	public Historico[] cadastrarHistorico(@Valid @RequestBody HistoricoDTO historicos[]) throws Exception { 
+		Historico[] lista = new Historico[historicos.length];
+		int i = 0;
+		for(HistoricoDTO historico : historicos) {
+			try {
+				lista[i++] = historicoService.novoHistorico(historico);				
+				System.out.println("Inserido");
+			}
+			catch(Exception e) {
+				throw new Exception("Erro ao processar arquivo." + e);
+			}
+		}
+		return lista;		
 	}
 
 }

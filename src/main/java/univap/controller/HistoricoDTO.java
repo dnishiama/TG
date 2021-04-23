@@ -10,6 +10,7 @@ public class HistoricoDTO {
 	private Long producaoColor;
 	private Long mesReferencia;
 	private Long anoReferencia;
+	
 	public Long getPatrimonio() {
 		return patrimonio;
 	}
@@ -51,6 +52,5 @@ public class HistoricoDTO {
 	}
 	public void setAnoReferencia(Long anoReferencia) {
 		this.anoReferencia = anoReferencia;
-	}
-		
+	}	
 }
