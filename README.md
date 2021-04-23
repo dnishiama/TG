@@ -1,4 +1,4 @@
-# Trabalho de Graduação
+# Trabalho de Graduação - Back-End
 
 Aluno: Douglas Hiromi Nishiama - RA: 1460281623012
 
@@ -44,5 +44,6 @@ Título: Gestor de Outsourcing de Impressão
 
 ### Histórico:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Get de todos os historicos: http://localhost:8082/printerManager/historico/<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Get de todos os historicos por Mês e Ano: http://localhost:8082/printerManager/historico/:Mes/:Ano<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Post de um novo historico: http://localhost:8082/printerManager/historico/cadastrar<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Get de todos os historicos por Mês e Ano agrupados por Centro de Custos: http://localhost:8082/printerManager/historico/:Mes/:Ano<br>
