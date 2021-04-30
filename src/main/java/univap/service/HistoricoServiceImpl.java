@@ -28,35 +28,45 @@ public class HistoricoServiceImpl {
 	
 	@Transactional /**Garantir a atomicidade*/
 	//@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public Historico novoHistorico(HistoricoDTO historico) throws Exception {
+	public Historico novoHistorico(HistoricoDTO historico, Long mes, Long ano) throws Exception {
 		
-		Historico historicoExistente = historicoRepo.findByPatrimonioAndMesAndAno(historico.getPatrimonio(), historico.getMesReferencia(), historico.getAnoReferencia());
+		Historico historicoExistente = historicoRepo.findByPatrimonioAndMesAndAno(historico.getPatrimonio(), mes, ano);
+		
 		Impressora impressoraExistente = impressoraRepo.findByPatrimonio(historico.getPatrimonio());
+		
 		if (historicoExistente != null) {
 			throw new NegocioException("Historico já cadastrado");
 		}
+		
 		else if (impressoraExistente == null) {
 			throw new NegocioException("Impressora inexistente");
 		}
-		else {		
-			if ( (impressoraExistente.getContadorMono() >= historico.getContadorMono()) &&
-				(impressoraExistente.getContadorColor() >= historico.getContadorColor()) )
+		
+		else {	
+			System.out.println("Passou pelos 2 primeiros if");
+			System.out.println(impressoraExistente.getContadorMono());
+			System.out.println(historico.getContadorMono());
+			System.out.println(impressoraExistente.getContadorColor());
+			System.out.println(historico.getContadorColor());
+			
+			if (impressoraExistente.getContadorMono() >= historico.getContadorMono())
 			
 			{
+				System.out.println("Entrou no if de checagem dos contadores");
 				Historico historicoNovo = new Historico();
-
+				
 				historicoNovo.setPatrimonio(historico.getPatrimonio());
 				historicoNovo.setContadorMono(historico.getContadorMono());
 				historicoNovo.setContadorColor(historico.getContadorColor());
 				historicoNovo.setProducaoMono(historico.getProducaoMono());
 				historicoNovo.setProducaoColor(historico.getProducaoColor());
-				historicoNovo.setMes(historico.getMesReferencia());
-				historicoNovo.setAno(historico.getAnoReferencia());
+				historicoNovo.setMes(mes);
+				historicoNovo.setAno(ano);				
 								
 				Date hoje = new Date();
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String check = dateFormat.format(hoje);
-				historicoNovo.setData(check);
+				historicoNovo.setData(check);				
 					
 				historicoNovo.setImpressora(impressoraExistente);
 				
@@ -64,7 +74,7 @@ public class HistoricoServiceImpl {
 				return historicoNovo;
 			}
 			else {
-				throw new NegocioException("Contador não bate");
+				throw new NegocioException("Contador não confere");
 			}			
 		}
 	}

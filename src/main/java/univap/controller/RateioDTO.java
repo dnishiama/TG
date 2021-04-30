@@ -34,7 +34,6 @@ public class RateioDTO {
 
 	
 	public RateioDTO(String ccusto, Long contadorMono, Long contadorColor) {
-		super();
 		this.ccusto = ccusto;
 		this.contadorMono = contadorMono;
 		this.contadorColor = contadorColor;

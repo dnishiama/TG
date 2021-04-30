@@ -51,19 +51,19 @@ public class HistoricoController {
 	/**GET HISTORICO: PARAMETRO MES E ANO*/
 	@GetMapping("/{mes}/{ano}") 
 	@JsonView(View.ViewResumo.class)
-	public List<Object[]> buscarPorMesEAno(@PathVariable Long mes, @PathVariable Long ano) { 		
+	public List<Object> buscarPorMesEAno(@PathVariable Long mes, @PathVariable Long ano) { 		
 		return historicoRepo.rateio(mes, ano);
 	}
 	
 	/**POST DE UM NOVO Historico*/
-	@PostMapping(value = "/cadastrar")
+	@PostMapping(value = "/cadastrar/{mes}/{ano}")
 	@JsonView(View.ViewResumo.class)
-	public Historico[] cadastrarHistorico(@Valid @RequestBody HistoricoDTO historicos[]) throws Exception { 
+	public Historico[] cadastrarHistorico(@Valid @RequestBody HistoricoDTO historicos[], @PathVariable Long mes, @PathVariable Long ano ) throws Exception { 
 		Historico[] lista = new Historico[historicos.length];
 		int i = 0;
 		for(HistoricoDTO historico : historicos) {
 			try {
-				lista[i++] = historicoService.novoHistorico(historico);				
+				lista[i++] = historicoService.novoHistorico(historico, mes, ano);				
 				System.out.println("Inserido");
 			}
 			catch(Exception e) {
