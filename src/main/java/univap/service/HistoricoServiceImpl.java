@@ -1,6 +1,8 @@
 package univap.service;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -9,10 +11,12 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import exception.NegocioException;
 import univap.model.Impressora;
 import univap.controller.HistoricoDTO;
+import univap.controller.RateioDTO;
 import univap.model.Historico;
 import univap.repository.HistoricoRepo;
 import univap.repository.ImpressoraRepo;
@@ -43,16 +47,9 @@ public class HistoricoServiceImpl {
 		}
 		
 		else {	
-			System.out.println("Passou pelos 2 primeiros if");
-			System.out.println(impressoraExistente.getContadorMono());
-			System.out.println(historico.getContadorMono());
-			System.out.println(impressoraExistente.getContadorColor());
-			System.out.println(historico.getContadorColor());
-			
 			if (impressoraExistente.getContadorMono() >= historico.getContadorMono())
 			
 			{
-				System.out.println("Entrou no if de checagem dos contadores");
 				Historico historicoNovo = new Historico();
 				
 				historicoNovo.setPatrimonio(historico.getPatrimonio());
@@ -80,6 +77,12 @@ public class HistoricoServiceImpl {
 	}
 	
 	public List<Historico> listar() {
+
 		return historicoRepo.findAll();
+	}
+	
+	public List<Object> listarRateio(@PathVariable Long mes, @PathVariable Long ano) {
+		
+		return historicoRepo.rateio(mes, ano);
 	}
 }

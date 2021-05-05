@@ -91,7 +91,6 @@ public class Historico {
 	@JsonView(View.ViewResumo.class)
 	private Impressora impressora;
 
-
 	public Long getId() {
 		return id;
 	}

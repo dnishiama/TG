@@ -3,6 +3,7 @@ package univap.controller;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +39,7 @@ public class HistoricoController {
 	
 	@Autowired
 	private HistoricoRepo historicoRepo;
+
 	@Autowired
 	private HistoricoServiceImpl historicoService;
 	
@@ -52,13 +54,13 @@ public class HistoricoController {
 	@GetMapping("/{mes}/{ano}") 
 	@JsonView(View.ViewResumo.class)
 	public List<Object> buscarPorMesEAno(@PathVariable Long mes, @PathVariable Long ano) { 		
-		return historicoRepo.rateio(mes, ano);
+		return historicoService.listarRateio(mes, ano);
 	}
 	
 	/**POST DE UM NOVO Historico*/
 	@PostMapping(value = "/cadastrar/{mes}/{ano}")
 	@JsonView(View.ViewResumo.class)
-	public Historico[] cadastrarHistorico(@Valid @RequestBody HistoricoDTO historicos[], @PathVariable Long mes, @PathVariable Long ano ) throws Exception { 
+	public List<Object> cadastrarHistorico(@Valid @RequestBody HistoricoDTO historicos[], @PathVariable Long mes, @PathVariable Long ano ) throws Exception { 
 		Historico[] lista = new Historico[historicos.length];
 		int i = 0;
 		for(HistoricoDTO historico : historicos) {
@@ -69,8 +71,9 @@ public class HistoricoController {
 			catch(Exception e) {
 				throw new Exception("Erro ao processar arquivo." + e);
 			}
-		}
-		return lista;		
+		}	
+		
+		return historicoService.listarRateio(mes, ano);		
 	}
 
 }
