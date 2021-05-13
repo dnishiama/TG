@@ -16,7 +16,7 @@ import univap.ValidationGroups;
 import univap.controller.View;
 
 @Entity
-@Table(name="oid_oids")
+@Table(name = "oid_oids")
 public class Oid {
 	@NotNull(groups = ValidationGroups.GestorId.class)
 	@Id
@@ -130,6 +130,5 @@ public class Oid {
 	public void setColorMono(String colorMono) {
 		this.colorMono = colorMono;
 	}
-	
-	
+
 }

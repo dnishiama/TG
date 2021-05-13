@@ -1,11 +1,8 @@
 package univap.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import univap.model.Impressora;
 import univap.model.Oid;
 import univap.repository.OidRepo;
 import univap.service.OidServiceImpl;
@@ -23,23 +19,23 @@ import univap.service.OidServiceImpl;
 @RequestMapping("/oid")
 @CrossOrigin
 public class OidController {
-	
+
 	@Autowired
-	private OidRepo oidRepo;
+	private OidRepo repository;
+
 	@Autowired
-	private OidServiceImpl oidService;
-	
+	private OidServiceImpl service;
+
 	@GetMapping
 	@JsonView(View.ViewResumo.class)
 	public List<Oid> listar() {
-		return oidRepo.findAll();
+		return repository.findAll();
 	}
-	
-	/**GET Impressora: PARAMETRO ID*/
-	@GetMapping("/{descricao}") 
+
+	@GetMapping("/{descricao}")
 	@JsonView(View.ViewResumo.class)
-	public Oid buscar(@PathVariable String descricao) { 		
-		return oidService.findByDescricao(descricao);
+	public Oid buscar(@PathVariable String descricao) {
+		return service.findByDescricao(descricao);
 
 	}
 }

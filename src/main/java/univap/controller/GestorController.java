@@ -20,87 +20,78 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import univap.dto.GestorDTO;
 import univap.model.Gestor;
 import univap.repository.GestorRepo;
 import univap.service.GestorServiceImpl;
 
-
-@RestController 
-@RequestMapping("/gestor") 
-@CrossOrigin 
-/**@CrossOrigin Permite que os serviços dessa classe possam ser acessados por aplicações JavaScript hospedadas em outros servidores*/
+@RestController
+@RequestMapping("/gestor")
+@CrossOrigin
 
 public class GestorController {
-	
+
 	@Autowired
-	private GestorRepo gestorRepo;	
-	
+	private GestorRepo repository;
+
 	@Autowired
-	private GestorServiceImpl gestorService;
-	
-	/**GET TODOS OS GESTORES*/
+	private GestorServiceImpl service;
+
 	@GetMapping
 	@JsonView(View.ViewCompleto.class)
-	public List<Gestor> listar() {
-		return gestorRepo.findAll(Sort.by(Sort.Direction.ASC, "nome"));
+	public List<Gestor> listAllGestor() {
+		return repository.findAll(Sort.by(Sort.Direction.ASC, "nome"));
 	}
-	
-	/**GET GESTOR: PARAMETRO ID*/
-	@GetMapping("/{gestorId}") 
+
+	@GetMapping("/{gestorId}")
 	@JsonView(View.ViewCompleto.class)
-	public ResponseEntity<Gestor> buscar(@PathVariable Long gestorId) { 
-		Optional <Gestor> gestor = gestorRepo.findById(gestorId);
+	public ResponseEntity<Gestor> searchGestorById(@PathVariable Long gestorId) {
+		Optional<Gestor> gestor = repository.findById(gestorId);
 		if (gestor.isPresent()) {
 			return ResponseEntity.ok(gestor.get());
 		}
 		return ResponseEntity.notFound().build();
 	}
-	
-	/**GET GESTOR: PARAMETRO EMAIL*/
-	@GetMapping("/email/{gestorEmail}") 
+
+	@GetMapping("/email/{gestorEmail}")
 	@JsonView(View.ViewCompleto.class)
-	public ResponseEntity<Gestor> buscar(@PathVariable String gestorEmail) { 
-		Gestor gestor = gestorRepo.findByEmail(gestorEmail);
+	public ResponseEntity<Gestor> searchGestorByEmail(@PathVariable String gestorEmail) {
+		Gestor gestor = repository.findByEmail(gestorEmail);
 		if (!gestor.getEmail().isEmpty()) {
 			return ResponseEntity.ok(gestor);
 		}
 		return ResponseEntity.notFound().build();
 	}
-	
-	
-	/**POST DE UM NOVO GESTOR*/
+
 	@PostMapping(value = "/cadastrar")
-	public Gestor cadastrarGestor(@Valid @RequestBody GestorDTO gestor) {
-		return gestorService.novoGestor(gestor.getNome(),
-				gestor.getEmail());
-	}	
-	
-	/**PUT DE UPDATE DE UM GESTOR*/
+	public Gestor postNewGestor(@Valid @RequestBody GestorDTO gestor) {
+		return service.novoGestor(gestor.getNome(), gestor.getEmail());
+	}
+
+	/** PUT DE UPDATE DE UM GESTOR */
 	@PutMapping("/atualizar/{gestorId}")
-	public ResponseEntity<Gestor> atualizar(@PathVariable Long gestorId, @Valid @RequestBody Gestor gestor) {
-		Optional <Gestor> optionalGestor = gestorRepo.findById(gestorId);
+	public ResponseEntity<Gestor> updateGestorById(@PathVariable Long gestorId, @Valid @RequestBody Gestor gestor) {
+		Optional<Gestor> optionalGestor = repository.findById(gestorId);
 		if (!optionalGestor.isPresent()) {
 			return ResponseEntity.notFound().build();
-		}
-		else {
+		} else {
 			Gestor gestorAtualizado = new Gestor();
-			gestorAtualizado = optionalGestor.get();			
+			gestorAtualizado = optionalGestor.get();
 			gestorAtualizado.setNome(gestor.getNome());
-			gestorAtualizado.setEmail(gestor.getEmail());			
-			gestor = gestorService.atualizar(gestorAtualizado);
+			gestorAtualizado.setEmail(gestor.getEmail());
+			gestor = service.atualizar(gestorAtualizado);
 		}
 		return ResponseEntity.ok(gestor);
 	}
-	
-	/**DELETE DE UM GESTOR: PARAMETRO ID*/
+
+	/** DELETE DE UM GESTOR: PARAMETRO ID */
 	@DeleteMapping("/deletar/{gestorId}")
-	public ResponseEntity<Void> remover(@PathVariable Long gestorId) {
-		if (!gestorRepo.existsById(gestorId)) {
+	public ResponseEntity<Void> deleteGestorById(@PathVariable Long gestorId) {
+		if (!repository.existsById(gestorId)) {
 			System.out.println("Não encontrado!");
 			return ResponseEntity.notFound().build();
-		}
-		else {
-			gestorService.excluir(gestorId);
+		} else {
+			service.excluir(gestorId);
 			return ResponseEntity.noContent().build();
 		}
 	}

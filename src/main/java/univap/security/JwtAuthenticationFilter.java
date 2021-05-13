@@ -18,21 +18,22 @@ import org.springframework.web.filter.GenericFilterBean;
 
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        try {
-            HttpServletRequest servletRequest = (HttpServletRequest) request;
-            String authorization = servletRequest.getHeader(HttpHeaders.AUTHORIZATION);
-            if (authorization != null) {
-                User usuario = JwtUtils.parseToken(authorization.replaceAll("Bearer ", ""));
-                Authentication credentials = new UsernamePasswordAuthenticationToken(usuario.getUsername(), usuario.getPassword(), usuario.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(credentials);
-            }
-            chain.doFilter(request, response);
-        }
-        catch(Throwable t) {
-            HttpServletResponse servletResponse = (HttpServletResponse) response;
-            servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, t.getMessage());
-        }
-    }
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
+		try {
+			HttpServletRequest servletRequest = (HttpServletRequest) request;
+			String authorization = servletRequest.getHeader(HttpHeaders.AUTHORIZATION);
+			if (authorization != null) {
+				User usuario = JwtUtils.parseToken(authorization.replaceAll("Bearer ", ""));
+				Authentication credentials = new UsernamePasswordAuthenticationToken(usuario.getUsername(),
+						usuario.getPassword(), usuario.getAuthorities());
+				SecurityContextHolder.getContext().setAuthentication(credentials);
+			}
+			chain.doFilter(request, response);
+		} catch (Throwable t) {
+			HttpServletResponse servletResponse = (HttpServletResponse) response;
+			servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, t.getMessage());
+		}
+	}
 }

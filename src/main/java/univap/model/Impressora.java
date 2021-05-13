@@ -1,7 +1,5 @@
 package univap.model;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,7 +8,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -24,20 +21,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import univap.ValidationGroups;
 import univap.controller.View;
 
-/**
-@Entity Anotação de indicação de Entidade
-@Table Anotação da tabela do Banco de dados
-@NotNull anotação de indicação que o campo não pode ser nulo
-@NotBlank anotação de indicação para validação(@valid) que o campo não pode ficar em branco
-@Size anotação de indicação do tamanho maximo do campo
-@Id anotação de chave primaria
-@GeneratedValue(strategy = GenerationType.IDENTITY) anotação de indicação de auto-increment.
-@Column(name = "ges_id") anotação do nome da coluna da tabela do Banco de Dados.
-@ManyToOne anotação indicativa de relação entre tabelas.
-*/
-
 @Entity
-@Table(name="imp_impressora")
+@Table(name = "imp_impressora")
 public class Impressora {
 	@NotNull(groups = ValidationGroups.GestorId.class)
 	@Id
@@ -49,35 +34,35 @@ public class Impressora {
 	@Column(name = "imp_patrimonio")
 	@JsonView(View.ViewResumo.class)
 	private Long patrimonio;
-	
+
 	@NotBlank
 	@Size(max = 80)
 	@Column(name = "imp_fabricante")
 	@JsonView(View.ViewResumo.class)
 	private String fabricante;
-	
+
 	@NotBlank
 	@Size(max = 30)
 	@Column(name = "imp_modelo")
 	@JsonView(View.ViewResumo.class)
 	private String modelo;
-	
+
 	@NotBlank
 	@Size(max = 40)
 	@Column(name = "imp_serie")
 	@JsonView(View.ViewResumo.class)
 	private String serial;
-	
+
 	@NotBlank
 	@Size(max = 30)
 	@Column(name = "imp_conexao")
 	@JsonView(View.ViewResumo.class)
 	private String ip;
-	
+
 	@Column(name = "imp_ultimo_contador")
 	@JsonView(View.ViewResumo.class)
 	private Long contadorMono;
-	
+
 	@Column(name = "imp_ultimo_contador_color")
 	@JsonView(View.ViewResumo.class)
 	private Long contadorColor;
@@ -90,7 +75,7 @@ public class Impressora {
 	@Valid
 	@ConvertGroup(from = Default.class, to = ValidationGroups.GestorId.class)
 	@NotNull
-	@ManyToOne(fetch = FetchType.EAGER)	
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "imp_dep_id")
 	@JsonView(View.ViewResumo.class)
 	private Departamento departamento;
@@ -174,5 +159,5 @@ public class Impressora {
 	public void setDepartamento(Departamento departamento) {
 		this.departamento = departamento;
 	}
-	
+
 }

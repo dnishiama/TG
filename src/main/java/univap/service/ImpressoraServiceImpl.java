@@ -7,13 +7,12 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import exception.NegocioException;
-import univap.model.Impressora;
 import univap.agent.Agente;
 import univap.model.Departamento;
+import univap.model.Impressora;
 import univap.repository.ImpressoraRepo;
 
 @Service

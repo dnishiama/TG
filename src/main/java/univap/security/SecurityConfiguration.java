@@ -18,37 +18,31 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
-    
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-            .addFilterBefore(new JwtAuthenticationFilter()
-                , UsernamePasswordAuthenticationFilter.class)
+	@Autowired
+	private UserDetailsService userDetailsService;
 
-                // this disables session creation on Spring Security
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-    }
-    
-    @Override
-    public void configure(AuthenticationManagerBuilder auth) 
-            throws Exception {
-        auth.userDetailsService(userDetailsService);
-    }
-    
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() 
-            throws Exception {
-        return super.authenticationManagerBean();
-    }
-    
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.csrf().disable().addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+
+				// this disables session creation on Spring Security
+				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+	}
+
+	@Override
+	public void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(userDetailsService);
+	}
+
+	@Bean
+	@Override
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 
 }
-

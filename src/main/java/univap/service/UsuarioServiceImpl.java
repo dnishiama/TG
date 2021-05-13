@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import univap.model.Autorizacao;
-import univap.model.Gestor;
 import univap.model.Usuario;
 import univap.repository.AutorizacaoRepo;
 import univap.repository.UsuarioRepo;

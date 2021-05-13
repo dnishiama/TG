@@ -2,7 +2,7 @@ package univap.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import univap.controller.UsuarioDTO;
+import univap.dto.UsuarioDTO;
 
 import java.io.IOException;
 import java.util.Date;

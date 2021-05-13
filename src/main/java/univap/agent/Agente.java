@@ -17,17 +17,13 @@ import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import exception.NegocioException;
-import univap.repository.OidRepo;
 
 @Service
 public class Agente {
 
-	@Autowired
-	private OidRepo oidrepo;
 	
 	Snmp snmp = null;
 	String address = null;
@@ -56,7 +52,9 @@ public class Agente {
 	public Agente() {
 	}
 
+	@SuppressWarnings("unchecked")
 	private void start() throws IOException {
+		@SuppressWarnings("rawtypes")
 		TransportMapping transport = new DefaultUdpTransportMapping();
 		snmp = new Snmp(transport);
 		transport.listen();
@@ -256,7 +254,7 @@ public class Agente {
 		}		
 	}
 
-	public static Long getContadorColor(String ips) throws IOException 
+	public Long getContadorColor(String ips) throws IOException 
 	{
 		
 		Agente client = new Agente(ips + "/161");
@@ -292,15 +290,7 @@ public class Agente {
 					printerCounterColor = Long.parseLong(client.getAsString(new OID(".1.3.6.1.4.1.1248.1.2.2.27.1.1.4.1.1")));
 				}
 			}
-			/** Ver impressora do Marketing.
-			 else if (selectMIB.contains("SHARP")) {
-				printerModel = client.getAsString(new OID(".1.3.6.1.2.1.25.3.2.1.3.1")).substring(7);
-				printerSerial = client.getAsString(new OID(".1.3.6.1.2.1.43.5.1.1.17.1"));
-				if (printerModel.contains("MX2010U"))
-				{
-					printerCounterColor = Long.parseLong(client.getAsString(new OID("")));
-				}
-			}*/
+			
 			return printerCounterColor;
 		}
 		catch(IOException e) {

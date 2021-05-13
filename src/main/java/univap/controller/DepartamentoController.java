@@ -21,99 +21,86 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import univap.dto.DepartamentoDTO;
 import univap.model.Departamento;
 import univap.model.Gestor;
 import univap.repository.DepartamentoRepo;
-import univap.repository.GestorRepo;
 import univap.service.DepartamentoServiceImpl;
 import univap.service.GestorServiceImpl;
 
-
 @RestController
 @RequestMapping("/departamento")
-@CrossOrigin 
-/**@CrossOrigin Permite que os serviços dessa classe possam ser acessados por aplicações JavaScript hospedadas em outros servidores*/
+@CrossOrigin
 
 public class DepartamentoController {
 
 	@Autowired
-	private DepartamentoRepo departamentoRepo;
+	private DepartamentoRepo repository;
 	@Autowired
-	private DepartamentoServiceImpl departamentoService;
-	
-	@Autowired
-	private GestorRepo gestorRepo;
+	private DepartamentoServiceImpl service;
+
 	@Autowired
 	private GestorServiceImpl gestorService;
-	
-	/**GET TODOS OS DEPARTAMENTOS*/
+
 	@GetMapping
 	@JsonView(View.ViewCompleto.class)
-	public List<Departamento> listar() {
-		return departamentoRepo.findAll(Sort.by(Sort.Direction.ASC, "campus", "bloco", "departamento"));
+	public List<Departamento> listAllDepartamento() {
+		return repository.findAll(Sort.by(Sort.Direction.ASC, "campus", "bloco", "departamento"));
 	}
-	
-	/**GET DEPARTAMENTO: PARAMETRO ID*/
-	@GetMapping("/{departamentoId}") 
+
+	@GetMapping("/{departamentoId}")
 	@JsonView(View.ViewCompleto.class)
-	public ResponseEntity<Departamento> buscar(@PathVariable Long departamentoId) { 		
-		Optional <Departamento> departamento = departamentoRepo.findById(departamentoId);
+	public ResponseEntity<Departamento> searchDepartamentoByDepartmentoId(@PathVariable Long departamentoId) {
+		Optional<Departamento> departamento = repository.findById(departamentoId);
 		if (departamento.isPresent()) {
 			return ResponseEntity.ok(departamento.get());
 		}
 		return ResponseEntity.notFound().build();
 	}
-	
-	/**GET DEPARTAMENTO: PARAMETRO GESTOR ID*/
-	@GetMapping("/gestor/{gestorId}") 
+
+	@GetMapping("/gestor/{gestorId}")
 	@JsonView(View.ViewCompleto.class)
-	public ResponseEntity <List<Departamento>> buscarPorGestor(@PathVariable Long gestorId) { 		
+	public ResponseEntity<List<Departamento>> searchDepartamentoByGestorId(@PathVariable Long gestorId) {
 		Optional<Gestor> gestor = gestorService.buscaPorId(gestorId);
 		if (gestor.isPresent()) {
 			Gestor gestorEncontrado = gestor.get();
-			return ResponseEntity.ok(departamentoRepo.findByGestor(gestorEncontrado));
+			return ResponseEntity.ok(repository.findByGestor(gestorEncontrado));
 		}
 		return ResponseEntity.notFound().build();
 	}
-	
-	/**GET DEPARTAMENTO: PARAMETRO GESTOR ID*/
-	@GetMapping("/gestor/bloco") 
+
+	@GetMapping("/gestor/bloco")
 	@JsonView(View.ViewCompleto.class)
-	public ResponseEntity <List<Departamento>> buscarPorBlocoEGestor(@RequestParam Long gestorId, String departamentoBloco) { 		
+	public ResponseEntity<List<Departamento>> searchDepartamentoByGestorAndBloco(@RequestParam Long gestorId,
+			String departamentoBloco) {
 		Optional<Gestor> gestor = gestorService.buscaPorId(gestorId);
 		if (gestor.isPresent()) {
 			Gestor gestorEncontrado = gestor.get();
-			List<Departamento> blocos = departamentoService.buscaPorBlocoEGestor(departamentoBloco, gestorEncontrado);
-			if (!blocos.isEmpty()){
-				return ResponseEntity.ok(departamentoService.buscaPorBlocoEGestor(departamentoBloco, gestorEncontrado));
-			}
-			else {
+			List<Departamento> blocos = service.searchDepartamentoByBlocoAndByGestorId(departamentoBloco, gestorEncontrado);
+			if (!blocos.isEmpty()) {
+				return ResponseEntity.ok(service.searchDepartamentoByBlocoAndByGestorId(departamentoBloco, gestorEncontrado));
+			} else {
 				return ResponseEntity.notFound().build();
 			}
 		}
 		return ResponseEntity.notFound().build();
 	}
-	
-	/**POST DE UM NOVO DEPARTAMENTO*/
+
 	@PostMapping(value = "/cadastrar")
 	@JsonView(View.ViewCompleto.class)
-	public Departamento cadastrarDepartamento(@Valid @RequestBody DepartamentoDTO departamento) { 
-		return departamentoService.novoDepartamento(departamento.getCampus(),
-				departamento.getBloco(),
-				departamento.getDepartamento(),
-				departamento.getCcusto(),
-				departamento.getGestor());				
+	public Departamento postNewDepartamento(@Valid @RequestBody DepartamentoDTO departamento) {
+		return service.newDepartamento(departamento.getCampus(), departamento.getBloco(),
+				departamento.getDepartamento(), departamento.getCcusto(), departamento.getGestor());
 	}
 
-	/**PUT DE UM DEPARTAMENTO: PARAMETRO ID*/
 	@PutMapping("/atualizar/{departamentoId}")
 	@JsonView(View.ViewCompleto.class)
-	public ResponseEntity<Departamento> atualizar(@PathVariable Long departamentoId, @Valid @RequestBody Departamento departamento){
-		Optional <Departamento> optionalDepartamento = departamentoRepo.findById(departamentoId);
-		if(!optionalDepartamento.isPresent()) {
+	public ResponseEntity<Departamento> updateDepartmentoById(@PathVariable Long departamentoId,
+			@Valid @RequestBody Departamento departamento) {
+		Optional<Departamento> optionalDepartamento = repository.findById(departamentoId);
+		if (!optionalDepartamento.isPresent()) {
 			return ResponseEntity.notFound().build();
-		}
-		else {
+		} else {
 			Departamento departamentoAtualizado = new Departamento();
 			departamentoAtualizado.setId(departamentoId);
 			departamentoAtualizado.setCampus(departamento.getCampus());
@@ -121,20 +108,18 @@ public class DepartamentoController {
 			departamentoAtualizado.setDepartamento(departamento.getDepartamento());
 			departamentoAtualizado.setCcusto(departamento.getCcusto());
 			departamentoAtualizado.setGestor(departamento.getGestor());
-			
-			departamento = departamentoRepo.save(departamentoAtualizado);
+
+			departamento = repository.save(departamentoAtualizado);
 		}
 		return ResponseEntity.ok(departamento);
 	}
-	
-	/**DELETE DE UM DEPARTAMENTO: PARAMETRO ID*/
+
 	@DeleteMapping("/deletar/{departamentoId}")
-	public ResponseEntity<Void> remover(@PathVariable Long departamentoId) {
-		if (!departamentoRepo.existsById(departamentoId)) {
+	public ResponseEntity<Void> deleteDepartamentoById(@PathVariable Long departamentoId) {
+		if (!repository.existsById(departamentoId)) {
 			return ResponseEntity.notFound().build();
-		}
-		else {
-			departamentoService.excluir(departamentoId);
+		} else {
+			service.DeleteDepartamento(departamentoId);
 			return ResponseEntity.noContent().build();
 		}
 	}

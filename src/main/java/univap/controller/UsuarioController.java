@@ -17,66 +17,56 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import univap.model.Gestor;
+import univap.dto.UsuarioDTO;
 import univap.model.Usuario;
 import univap.repository.UsuarioRepo;
 import univap.service.UsuarioServiceImpl;
 
-
 @RestController
 @RequestMapping(value = "/usuario")
-@CrossOrigin 
-
+@CrossOrigin
 public class UsuarioController {
 
 	@Autowired
-    private UsuarioServiceImpl usuarioService;	
+	private UsuarioServiceImpl service;
+
 	@Autowired
-    private UsuarioRepo usuarioRepo;
-	
-	/**GET TODOS OS USUARIOS*/
-	@GetMapping 
-	public List<Usuario> listar() {
-		return usuarioRepo.findAll();
+	private UsuarioRepo repository;
+
+	@GetMapping
+	public List<Usuario> listAll() {
+		return repository.findAll();
 	}
-    
-	/**POST DE NOVOS USUARIOS*/
+
 	@PostMapping(value = "/cadastrar")
-    public Usuario cadastrarUsuario(@RequestBody UsuarioDTO usuario) {
-        return usuarioService.novoUsuario(usuario.getNome(), 
-                usuario.getEmail(), 
-                usuario.getSenha(),
-                usuario.getAutorizacao());
-    }
-	
-	/**PUT DE UPDATE DE UM USUARIO*/
+	public Usuario postNewUsuario(@RequestBody UsuarioDTO usuario) {
+		return service.novoUsuario(usuario.getNome(), usuario.getEmail(), usuario.getSenha(), usuario.getAutorizacao());
+	}
+
 	@PutMapping("/atualizar/{usuarioId}")
-	public ResponseEntity<Usuario> atualizar(@PathVariable Long usuarioId, @Valid @RequestBody Usuario usuario) {
-		Optional <Usuario> optionalGestor = usuarioRepo.findById(usuarioId);
+	public ResponseEntity<Usuario> updateById(@PathVariable Long usuarioId, @Valid @RequestBody Usuario usuario) {
+		Optional<Usuario> optionalGestor = repository.findById(usuarioId);
 		if (!optionalGestor.isPresent()) {
 			return ResponseEntity.notFound().build();
-		}
-		else {
+		} else {
 			Usuario usuarioAtualizado = new Usuario();
-			usuarioAtualizado = optionalGestor.get();			
+			usuarioAtualizado = optionalGestor.get();
 			usuarioAtualizado.setNome(usuario.getNome());
-			usuarioAtualizado.setEmail(usuario.getEmail());			
-			usuario = usuarioService.atualizar(usuarioAtualizado);
+			usuarioAtualizado.setEmail(usuario.getEmail());
+			usuario = service.atualizar(usuarioAtualizado);
 		}
 		return ResponseEntity.ok(usuario);
 	}
-	
-	/**DELETE DE UM USUARIO: PARAMETRO ID*/
+
 	@DeleteMapping("/deletar/{usuarioId}")
-	public ResponseEntity<Void> remover(@PathVariable Long usuarioId) {
-		if (!usuarioRepo.existsById(usuarioId)) {
+	public ResponseEntity<Void> deleteById(@PathVariable Long usuarioId) {
+		if (!repository.existsById(usuarioId)) {
 			System.out.println("Não encontrado!");
 			return ResponseEntity.notFound().build();
-		}
-		else {
-			usuarioService.excluir(usuarioId);
+		} else {
+			service.excluir(usuarioId);
 			return ResponseEntity.noContent().build();
 		}
 	}
-	
+
 }

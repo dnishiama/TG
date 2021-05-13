@@ -9,7 +9,9 @@ import univap.model.Impressora;
 
 public interface ImpressoraRepo extends JpaRepository<Impressora, Long> {
 	public Impressora findByPatrimonio(Long patrimonio);
-	public Impressora findBySerial(String serial);	
-	List<Impressora> findByDepartamento(Departamento departamento);	
-	
+
+	public Impressora findBySerial(String serial);
+
+	public List<Impressora> findByDepartamento(Departamento departamento);
+
 }
