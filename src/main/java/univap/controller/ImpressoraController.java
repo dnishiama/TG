@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import univap.dto.ImpressoraDTO;
+import univap.dto.ImpressoraOfflineDTO;
+import univap.model.Departamento;
 import univap.model.Impressora;
 import univap.repository.ImpressoraRepo;
 import univap.service.ImpressoraServiceImpl;
@@ -41,7 +43,7 @@ public class ImpressoraController implements CommandLineRunner {
 	@GetMapping
 	@JsonView(View.ViewResumo.class)
 	public List<Impressora> listAll() {
-		return impressoraRepo.findAll(Sort.by(Sort.Direction.ASC, "departamento"));
+		return impressoraRepo.findAll(Sort.by(Sort.Direction.DESC, "ultimoUpdate"));
 	}
 
 	@GetMapping("/{impressoraId}")
@@ -89,18 +91,20 @@ public class ImpressoraController implements CommandLineRunner {
 		}
 		return ResponseEntity.notFound().build();
 	}
-
-	@PutMapping("/atualizar/{patrimonio}")
+	
+	@PutMapping(value = "/atualizarOnline/{id}")
 	@JsonView(View.ViewResumo.class)
-	public ResponseEntity<Impressora> updateById(@Valid @RequestBody ImpressoraDTO impressora) throws Exception {
-		Impressora atualizaImpressora = impressoraRepo.findByPatrimonio(impressora.getPatrimonio());
-		if (atualizaImpressora.getSerial().equals(impressora.getSerial())) {
-			impressora.setDepartamento(impressora.getDepartamento());
-			return ResponseEntity.ok(atualizaImpressora);
-		}
-		return ResponseEntity.notFound().build();
+	public ResponseEntity<Impressora> putImpressoraOnline(@Valid @RequestBody ImpressoraDTO impressora, @PathVariable Long id) throws Exception {
+		return ResponseEntity.ok(impressoraService.atualizaImpressoraOnline(impressora, id));
 	}
-
+	
+	
+	@PutMapping(value = "/atualizarOffline/{id}")
+	@JsonView(View.ViewResumo.class)
+	public Impressora putImpressoraOffline(@Valid @RequestBody ImpressoraDTO impressora, @PathVariable Long id) throws Exception {
+		return impressoraService.atualizaImpressoraOffline(impressora, id);
+	}
+	
 	@GetMapping("/agente")
 	@JsonView(View.ViewResumo.class)
 	public void updateAllCounters() {

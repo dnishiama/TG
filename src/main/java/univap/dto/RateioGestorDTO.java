@@ -46,7 +46,13 @@ public class RateioGestorDTO implements Serializable {
 		this.nome = nome;
 		this.email = email;
 		this.contadorMono = contadorMono;
-		this.contadorColor = contadorColor;
+		if (contadorColor == null) {
+			this.contadorColor = 0L;
+		}
+		else {
+			this.contadorColor = contadorColor;
+		}
+		
 	}
 	
 	public RateioGestorDTO() {

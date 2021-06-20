@@ -166,20 +166,36 @@ public class HistoricoServiceImpl {
 				// Set Subject: header field
 				message.setSubject("Consumo Mensal Outsourcing de Impressão.");
 
-				// Now set the actual message
-				message.setText(item.getNome() + "," 
-								+ "\n\n" 
-								+ "Segue abaixo o consumo mensal das impressoras sob seu domínio."
-								+ "\n\n" 
-								+ "Impressoras Color: " + item.getContadorColor() 
-								+ "\n" 
-								+ "Impressoras Mono: " + item.getContadorMono() 
-								+ "\n\n" 
-								+ "Qualquer dúvida estou a disposição!,"
-								+ "\n\n" 
-								+ "Atenciosamente,"
-								+ "\n" 
-								+ "Douglas Nishiama");
+				
+				if (item.getContadorColor() == 0){
+					// Now set the actual message
+					message.setText(item.getNome() + "," 
+							+ "\n\n" 
+							+ "Segue abaixo o consumo mensal das impressoras sob seu domínio."
+							+ "\n\n"
+							+ "Impressoras Mono: " + item.getContadorMono()
+							+ "\n\n" 
+							+ "Qualquer dúvida estou a disposição!,"
+							+ "\n\n" 
+							+ "Atenciosamente,"
+							+ "\n" 
+							+ "Douglas Nishiama");
+				}
+				else {
+					message.setText(item.getNome() + "," 
+							+ "\n\n" 
+							+ "Segue abaixo o consumo mensal das impressoras sob seu domínio."
+							+ "\n\n"
+							+ "Impressoras Color: " + item.getContadorColor() + "\n"
+							+ "Impressoras Mono: " + item.getContadorMono()
+							+ "\n\n" 
+							+ "Qualquer dúvida estou a disposição!,"
+							+ "\n\n" 
+							+ "Atenciosamente,"
+							+ "\n" 
+							+ "Douglas Nishiama");
+				}
+
 
 				// Send message
 				Transport.send(message);

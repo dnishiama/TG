@@ -3,14 +3,18 @@ package univap.service;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import exception.NegocioException;
 import univap.agent.Agente;
+import univap.dto.ImpressoraDTO;
+import univap.dto.ImpressoraOfflineDTO;
 import univap.model.Departamento;
 import univap.model.Impressora;
 import univap.repository.ImpressoraRepo;
@@ -18,170 +22,155 @@ import univap.repository.ImpressoraRepo;
 @Service
 public class ImpressoraServiceImpl {
 
-	//------------------------------------------------------ Injeções  ------------------------------------------------------
+	// ------------------------------------------------------ Injeções
+	// ------------------------------------------------------
 	@Autowired
 	private ImpressoraRepo impressoraRepo;
 	@Autowired
 	private Agente agente;
-	
-	//-------------------------------------------------- Métodos de Adição ---------------------------------------------------
 
-	@Transactional /**Garantir a atomicidade*/
-	//@PreAuthorize("hasRole('ROLE_ADMIN')")
+	// -------------------------------------------------- Métodos de Adição
+	// ---------------------------------------------------
+
+	@Transactional /** Garantir a atomicidade */
+	// @PreAuthorize("hasRole('ROLE_ADMIN')")
 	public Impressora novaImpressora(Long patrimonio, String ip, Departamento departamento) throws Exception {
 		try {
 			Impressora impressoraExistente = impressoraRepo.findBySerial(agente.serial(ip));
 			if (impressoraExistente != null) {
 				throw new NegocioException("Impressora já cadastrada");
-			}
-			else {			
+			} else {
 				Date hoje = new Date();
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String check = dateFormat.format(hoje);
-				Long mono,color; 
+				Long mono, color;
 				String fabricante, modelo, serial;
 				fabricante = modelo = serial = "";
-				
+
 				System.out.println("Contador do IP " + ip + " ...");
-				System.out.println("Contador mono: "+ agente.getContadorMono(ip));
-				if (agente.getContadorMono(ip)>0) {
+				System.out.println("Contador mono: " + agente.getContadorMono(ip));
+				if (agente.getContadorMono(ip) > 0) {
 					mono = (long) agente.getContadorMono(ip);
+				} else {
+					mono = (long) 0;
 				}
-				else {
-					mono =(long) 0;
-				}
-				System.out.println("Mono: "+ mono);
-				
+				System.out.println("Mono: " + mono);
+
 				color = null;
-				if(agente.getModelo(ip).equals("MC780") || 
-						agente.getModelo(ip).equals("ES8473") || 
-						agente.getModelo(ip).equals("WF-5690"))
-				{
-					if (agente.getContadorColor(ip)>0) {
-						color= (long)agente.getContadorColor(ip);
-						System.out.println("Color: "+ color);
+				if (agente.getModelo(ip).equals("MC780") || agente.getModelo(ip).equals("ES8473")
+						|| agente.getModelo(ip).equals("WF-5690")) {
+					if (agente.getContadorColor(ip) > 0) {
+						color = (long) agente.getContadorColor(ip);
+						System.out.println("Color: " + color);
 					}
 				}
-				
-				if(!agente.fabricante(ip).isBlank()) {
+
+				if (!agente.fabricante(ip).isBlank()) {
 					fabricante = agente.fabricante(ip);
 					modelo = agente.getModelo(ip);
 					serial = agente.serial(ip);
 				}
-				
+
 				Impressora impressoraNova = new Impressora();
-				
-				//Parametros Recebidos
+
+				// Parametros Recebidos
 				impressoraNova.setPatrimonio(patrimonio);
 				impressoraNova.setIp(ip);
 				impressoraNova.setDepartamento(departamento);
-				
-				//Parametros do agente
+
+				// Parametros do agente
 				impressoraNova.setFabricante(fabricante);
 				impressoraNova.setModelo(modelo);
-				impressoraNova.setSerial(serial);			
+				impressoraNova.setSerial(serial);
 				impressoraNova.setContadorMono(mono);
-				impressoraNova.setContadorColor(color);			
+				impressoraNova.setContadorColor(color);
 				impressoraNova.setUltimoUpdate(check);
 				impressoraRepo.save(impressoraNova);
-				
-				System.out.println("Contador mono: "+ mono);
-				System.out.println("Contador color: "+ color);
+
+				System.out.println("Contador mono: " + mono);
+				System.out.println("Contador color: " + color);
 				return impressoraNova;
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			System.out.println(e);
 		}
 		return null;
 	}
-	
-	public Impressora novaImpressoraOffline(
-			Long patrimonio, 
-			String ip, 
-			String fabricante, 
-			String modelo, 
-			String serial,
-			Long mono,
-			Long color,
-			Departamento departamento) throws Exception {
-		
+
+	public Impressora novaImpressoraOffline(Long patrimonio, String ip, String fabricante, String modelo, String serial,
+			Long mono, Long color, Departamento departamento) throws Exception {
+
 		Impressora impressoraExistente = impressoraRepo.findBySerial(serial);
 		if (impressoraExistente != null) {
 			throw new NegocioException("Impressora já cadastrado");
-		}
-		else {			
+		} else {
 			Date hoje = new Date();
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			String check = dateFormat.format(hoje); 
+			String check = dateFormat.format(hoje);
 
 			Impressora impressoraNova = new Impressora();
-			
-			
-			//TESTAR ISSO:
-			if ((mono<0)||(color<0))
-			{
+
+			// TESTAR ISSO:
+			if ((mono < 0) || (color < 0)) {
 				throw new NegocioException("Contadores incompativeis.");
 			}
-			
-			//Parametros Recebidos
+
+			// Parametros Recebidos
 			impressoraNova.setPatrimonio(patrimonio);
 			impressoraNova.setIp(ip);
 			impressoraNova.setDepartamento(departamento);
 			impressoraNova.setFabricante(fabricante);
 			impressoraNova.setModelo(modelo);
-			impressoraNova.setSerial(serial);			
+			impressoraNova.setSerial(serial);
 			impressoraNova.setContadorMono(mono);
 			impressoraNova.setContadorColor(color);
 			impressoraNova.setUltimoUpdate(check);
-			
+
 			impressoraRepo.save(impressoraNova);
 			return impressoraNova;
 		}
 	}
-	
-	//----------------------------------------------- Métodos de Atualização -------------------------------------------------
-	
-	//@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public Impressora atualiza(Impressora impressora){
+
+	// ----------------------------------------------- Métodos de Atualização
+	// -------------------------------------------------
+
+	// @PreAuthorize("hasRole('ROLE_ADMIN')")
+	public Impressora atualiza(Impressora impressora) {
 		try {
 			String ip = impressora.getIp();
-			if(ip.equals("USB")) {
+			if (ip.equals("USB")) {
 				throw new NegocioException("Impressora USB");
 			}
 			System.out.println(agente.serial(ip));
 			Impressora impressoraExistente = impressoraRepo.findBySerial(agente.serial(ip));
 			System.out.println(impressoraExistente.getFabricante() + " " + impressoraExistente.getModelo());
 			System.out.println(impressora.getFabricante() + " " + impressora.getModelo());
-			if (	(impressoraExistente != null) && 
-					(impressoraExistente.getSerial().equals(impressora.getSerial()) ) && 
-					(impressoraExistente.getModelo().equals(impressora.getModelo())) ) {				
+			if ((impressoraExistente != null) && (impressoraExistente.getSerial().equals(impressora.getSerial()))
+					&& (impressoraExistente.getModelo().equals(impressora.getModelo()))) {
 				Date hoje = new Date();
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String check = dateFormat.format(hoje);
-				Long mono,color;
-				
-				//Contador mono
-				if ((agente.getContadorMono(ip) > 0) && (agente.getContadorMono(ip) >= impressoraExistente.getContadorMono())) {
+				Long mono, color;
+
+				// Contador mono
+				if ((agente.getContadorMono(ip) > 0)
+						&& (agente.getContadorMono(ip) >= impressoraExistente.getContadorMono())) {
+					mono = (long) agente.getContadorMono(ip);
+				} else {
 					mono = (long) agente.getContadorMono(ip);
 				}
-				else {
-					mono = (long) agente.getContadorMono(ip);
-				}
-				
-				//Contador color
+
+				// Contador color
 				color = null;
-				if(agente.getModelo(ip).equals("MC780") || 
-						agente.getModelo(ip).equals("ES8473") || 
-						agente.getModelo(ip).equals("WF-5690"))
-				{
-					if ((agente.getContadorColor(ip) >= 0) && 
-							(impressoraExistente.getContadorColor() <= agente.getContadorColor(ip)) ) {
-						color= (long) agente.getContadorColor(ip);
+				if (agente.getModelo(ip).equals("MC780") || agente.getModelo(ip).equals("ES8473")
+						|| agente.getModelo(ip).equals("WF-5690")) {
+					if ((agente.getContadorColor(ip) >= 0)
+							&& (impressoraExistente.getContadorColor() <= agente.getContadorColor(ip))) {
+						color = (long) agente.getContadorColor(ip);
 					}
-				}				
-				
-				//Parametros Recebidos
+				}
+
+				// Parametros Recebidos
 				impressoraExistente.setPatrimonio(impressora.getPatrimonio());
 				impressoraExistente.setIp(ip);
 				impressoraExistente.setDepartamento(impressora.getDepartamento());
@@ -189,50 +178,94 @@ public class ImpressoraServiceImpl {
 				impressoraExistente.setModelo(impressora.getModelo());
 				impressoraExistente.setSerial(impressora.getSerial());
 				impressoraExistente.setDepartamento(impressora.getDepartamento());
-				
-				//Parametros do agente
+
+				// Parametros do agente
 				impressoraExistente.setContadorMono(mono);
-				impressoraExistente.setContadorColor(color);			
-		
+				impressoraExistente.setContadorColor(color);
+
 				impressoraExistente.setUltimoUpdate(check);
 				impressoraRepo.save(impressoraExistente);
-				
+
 				System.out.println("----------------------------------------------------");
 				System.out.println("");
-				
+
 				return impressoraExistente;
-			}
-			else {
+			} else {
 				throw new NegocioException("Dados divergentes");
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			System.out.println(e);
 		}
 		return null;
 	}
-	
-	//------------------------------------------------ Métodos de Listagem ---------------------------------------------------
-	
-	public List <Impressora> buscaPorDepartamento(Departamento departamento){	
+
+	public Impressora atualizaImpressoraOffline(ImpressoraDTO impressora, Long id) throws Exception {
+
+		Optional<Impressora> atualizar = impressoraRepo.findById(id);
+
+		if (!atualizar.isEmpty()) {
+			System.out.println("Primeiro breakpoint");
+			Impressora atualiza = atualizar.get();
+			atualiza.setPatrimonio(impressora.getPatrimonio());
+			atualiza.setIp(impressora.getIp());
+			atualiza.setFabricante(impressora.getFabricante());
+			atualiza.setModelo(impressora.getModelo());
+			atualiza.setSerial(impressora.getSerial());
+			atualiza.setContadorMono(impressora.getContadorMono());
+			atualiza.setContadorColor(impressora.getContadorColor());
+			atualiza.setDepartamento(impressora.getDepartamento());
+
+			Date hoje = new Date();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String check = dateFormat.format(hoje);
+			atualiza.setUltimoUpdate(check);
+
+			impressoraRepo.save(atualiza);
+			System.out.println("Segundo breakpoint");
+			return atualiza;
+		} else {
+			throw new Exception("Impressora não encontrada");
+		}
+	}
+
+	public Impressora atualizaImpressoraOnline(ImpressoraDTO impressora, Long id) throws Exception {
+
+		Optional<Impressora> atualizar = impressoraRepo.findById(id);
+
+		if (!atualizar.isEmpty()) {
+			System.out.println("Primeiro breakpoint");
+			Impressora atualiza = atualizar.get();
+			atualiza.setPatrimonio(impressora.getPatrimonio());
+			atualiza.setIp(impressora.getIp());
+			atualiza.setDepartamento(impressora.getDepartamento());
+			
+			impressoraRepo.save(atualiza);
+			atualiza(atualiza);
+			
+			System.out.println("Segundo breakpoint");
+			return atualiza;
+		} else {
+			throw new Exception("Impressora não encontrada");
+		}
+	}
+
+	// ------------------------------------------------ Métodos de Listagem
+	// ---------------------------------------------------
+
+	public List<Impressora> buscaPorDepartamento(Departamento departamento) {
 		return impressoraRepo.findByDepartamento(departamento);
 	}
-	
+
 	public List<Impressora> listar() {
 		return impressoraRepo.findAll();
 	}
-	
-	//------------------------------------------------ Métodos de Exclusão ---------------------------------------------------
-	
-	//@PreAuthorize("hasRole('ROLE_ADMIN')")
+
+	// ------------------------------------------------ Métodos de Exclusão
+	// ---------------------------------------------------
+
+	// @PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void excluir(Long impressoraId) {
 		impressoraRepo.deleteById(impressoraId);
 	}
-		
+
 }
-
-
-	
-	
-	
-	
